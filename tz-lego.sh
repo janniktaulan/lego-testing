@@ -6,32 +6,55 @@ if [ ! -x "$(which lego)" ]; then
 fi
 
 function read_credentials() {
+    if test -f /etc/lego/scripts/user_credentials; then
+    read -n 1 -p "Do you want to reuse saved EAB credentials? (y/n): " reuse_eab
+    echo
+        if [[ "$reuse_eab" == "y" ]]; then
+            read -p "Please enter your domain: " domain
+            return
+        else 
+            sudo rm /etc/lego/scripts/user_credentials
+        fi
+    fi
     read -p "Please enter your EAB Key ID: " eab_kid
     read -p "Please enter your EAB HMAC Key: " eab_hmac
     read -p "Please enter your domain: " domain
+    mkdir -p /etc/lego/scripts/
+    echo "export eab_kid=\"$eab_kid\"" > /etc/lego/scripts/user_credentials
+    echo "export eab_hmac=\"$eab_hmac\"" >> /etc/lego/scripts/user_credentials
+    chmod 600 /etc/lego/scripts/user_credentials
 }
 
 function dns_full() {
+    if test -f /etc/lego/scripts/azure_credentials; then
+    read -n 1 -p "Do you want to reuse saved Azure credentials? (y/n): " reuse_azure
+    echo
+        if [[ "$reuse_azure" == "y" ]]; then
+            return
+        else
+            sudo rm /etc/lego/scripts/azure_credentials
+        fi
+    fi
     read -p "Please enter your Azure Client ID: " azure_client_id
     read -p "Please enter your Azure Client Secret: " azure_client_secret
     read -p "Please enter your Azure Tenant ID: " azure_tenant_id
     read -p "Please enter your Azure Subscription ID: " azure_subscription_id
-    touch /etc/lego/scripts/azure_credentials
-    echo "AZURE_CLIENT_ID=$azure_client_id" >> /etc/lego/scripts/azure_credentials
-    echo "AZURE_CLIENT_SECRET=$azure_client_secret" >> /etc/lego/scripts/azure_credentials
-    echo "AZURE_TENANT_ID=$azure_tenant_id" >> /etc/lego/scripts/azure_credentials
-    echo "AZURE_SUBSCRIPTION_ID=$azure_subscription_id" >> /etc/lego/scripts/azure_credentials
-    echo "AZURE_ENVIRONMENT=public" >> /etc/lego/scripts/azure_credentials
+    mkdir -p /etc/lego/scripts/
+    echo "export AZURE_CLIENT_ID=\"$azure_client_id\"" >> /etc/lego/scripts/azure_credentials
+    echo "export AZURE_CLIENT_SECRET=\"$azure_client_secret\"" >> /etc/lego/scripts/azure_credentials
+    echo "export AZURE_TENANT_ID=\"$azure_tenant_id\"" >> /etc/lego/scripts/azure_credentials
+    echo "export AZURE_SUBSCRIPTION_ID=\"$azure_subscription_id\"" >> /etc/lego/scripts/azure_credentials
+    echo "export AZURE_ENVIRONMENT=\"public\"" >> /etc/lego/scripts/azure_credentials
     chmod 600 /etc/lego/scripts/azure_credentials
-    chmod +x /etc/lego/scripts/azure_credentials
 }
 
 # Prompt for validation method
 echo "How do you want to validate?"
-echo "1: Pre-validated"
-echo "2: DNS"
-echo "3: HTTP"
-read -p "Enter choice [1-3]: " validation_choice
+echo "1: Pre-validated domain"
+echo "2: Azure DNS"
+echo "3: HTTP Validation (NOT SUPPORTED YET)"
+read -n 1 -p "Enter choice [1-3]: " validation_choice
+echo
 
 case $validation_choice in
     1)
@@ -57,6 +80,10 @@ case $validation_choice in
         ;;
 esac
 #reg var
+# Always source user credentials before using eab_kid and eab_hmac
+if [ -f /etc/lego/scripts/user_credentials ]; then
+    . /etc/lego/scripts/user_credentials
+fi
 registration="--server https://emea.acme.atlas.globalsign.com/directory --email test123@test.com -a"
 
 #eab var
@@ -73,15 +100,16 @@ domain="--domains "${domain:?}" --key-type rsa2048 run"
 if [ $validation = manual ]; 
 then
     echo "LEGO command: sudo lego $registration $val_manual $eab $domain" 
-    sudo lego $registration $dns_manual $eab $domain
+    sudo lego $registration $val_manual $eab $domain
     echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
     exit
 fi
 
 if [ $validation = azure ]; 
 then
+    . /etc/lego/scripts/azure_credentials
     echo "LEGO command: sudo lego $registration $val_azure $eab $domain"
-    sudo lego $registration $val_azure $eab $domain
+    sudo -E lego $registration $val_azure $eab $domain
     echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
     exit
 fi
@@ -94,5 +122,6 @@ fi
 #    exit
 #fi
 
+# use saved credentials for reuse, just a simple yes/no, where no means overwriting the old ones.
 # cronjob implementering - evt opret en liste som scriptet kan bruge til at vedligeholde cronjobs.
 # valg af pre-validated / dns / HTTP

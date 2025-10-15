@@ -122,6 +122,7 @@ fi
 #    exit
 #fi
 
-# use saved credentials for reuse, just a simple yes/no, where no means overwriting the old ones.
 # cronjob implementering - evt opret en liste som scriptet kan bruge til at vedligeholde cronjobs.
-# valg af pre-validated / dns / HTTP
+# HTTP implementering
+# Flere DNS udbydere end Azure?
+# PT virker det kun med et set credentials. Kan vi implementere en måde at råde over flere credentials på?

@@ -4,6 +4,18 @@ if [ ! -x "$(which lego)" ]; then
    echo "Please install lego using this command: sudo snap install lego"
    exit 1
 fi
+mkdir -p /etc/lego/scripts/
+if ! [ -e "/etc/lego/scripts/user_credentials" ] ; then
+    touch "/etc/lego/scripts/user_credentials"
+fi
+
+if ! [ -e "/etc/lego/scripts/azure_credentials" ] ; then
+    touch "/etc/lego/scripts/azure_credentials"
+fi
+
+if ! [ -e "/etc/lego/scripts/renew.sh" ] ; then
+    touch "/etc/lego/scripts/renew.sh"
+fi
 
 function read_credentials() {
     if test -f /etc/lego/scripts/user_credentials; then
@@ -19,7 +31,6 @@ function read_credentials() {
     read -p "Please enter your EAB Key ID: " eab_kid
     read -p "Please enter your EAB HMAC Key: " eab_hmac
     read -p "Please enter your domain: " domain
-    mkdir -p /etc/lego/scripts/
     echo "export eab_kid=\"$eab_kid\"" > /etc/lego/scripts/user_credentials
     echo "export eab_hmac=\"$eab_hmac\"" >> /etc/lego/scripts/user_credentials
     chmod 600 /etc/lego/scripts/user_credentials
@@ -39,7 +50,6 @@ function dns_full() {
     read -p "Please enter your Azure Client Secret: " azure_client_secret
     read -p "Please enter your Azure Tenant ID: " azure_tenant_id
     read -p "Please enter your Azure Subscription ID: " azure_subscription_id
-    mkdir -p /etc/lego/scripts/
     echo "export AZURE_CLIENT_ID=\"$azure_client_id\"" >> /etc/lego/scripts/azure_credentials
     echo "export AZURE_CLIENT_SECRET=\"$azure_client_secret\"" >> /etc/lego/scripts/azure_credentials
     echo "export AZURE_TENANT_ID=\"$azure_tenant_id\"" >> /etc/lego/scripts/azure_credentials
@@ -148,9 +158,9 @@ then
     echo "Attempting to restart web server: $server"
     sudo systemctl restart $server
     if [ $renewal = yes ]; then
-        echo "Creating cronjob for automatic renewal"
-        mkdir -p /etc/lego/scripts/
-        echo ". /home/jn/.lego/scripts/lego-env" > /etc/lego/scripts/renewal.sh
+        echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
+        echo "# Renewal job for: $domain" > /etc/lego/scripts/renewal.sh
+        echo ". /home/jn/.lego/scripts/lego-env" >> /etc/lego/scripts/renewal.sh
         echo "sudo lego $registration $val_manual $eab $domain_renew" >> /etc/lego/scripts/renewal.sh
         echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
     fi

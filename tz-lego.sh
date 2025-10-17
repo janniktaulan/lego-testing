@@ -5,13 +5,6 @@ if [ ! -x "$(which lego)" ]; then
    exit 1
 fi
 mkdir -p /etc/lego/scripts/
-if ! [ -e "/etc/lego/scripts/user_credentials" ] ; then
-    touch "/etc/lego/scripts/user_credentials"
-fi
-
-if ! [ -e "/etc/lego/scripts/azure_credentials" ] ; then
-    touch "/etc/lego/scripts/azure_credentials"
-fi
 
 if ! [ -e "/etc/lego/scripts/renew.sh" ] ; then
     touch "/etc/lego/scripts/renew.sh"
@@ -159,10 +152,11 @@ then
     sudo systemctl restart $server
     if [ $renewal = yes ]; then
         echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
-        echo "# Renewal job for: $domain" > /etc/lego/scripts/renewal.sh
+        echo "# Renewal job for: $domain" >> /etc/lego/scripts/renewal.sh
         echo ". /home/jn/.lego/scripts/lego-env" >> /etc/lego/scripts/renewal.sh
         echo "sudo lego $registration $val_manual $eab $domain_renew" >> /etc/lego/scripts/renewal.sh
         echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
+        echo "" >> /etc/lego/scripts/renewal.sh
     fi
     echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
     exit

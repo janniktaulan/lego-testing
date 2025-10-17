@@ -62,7 +62,7 @@ case $server_choice in
         echo
         ;;
     2)
-        server="apache"
+        server="apache2"
         echo "Server: Apache"
         echo
         ;;
@@ -84,17 +84,20 @@ case $validation_choice in
     1)
         validation="manual"
         echo "MODE: Pre-validated DNS"
+        echo
         read_credentials
         ;;
     2)
         validation="azure"
         echo "MODE: Azure DNS"
+        echo
         read_credentials
         dns_full
         ;;
     3)
         validation="http"
         echo "MODE: HTTP Validation"
+        echo
         read_credentials
         http_validation  # You may need to implement this function if not present
         ;;
@@ -125,6 +128,8 @@ if [ $validation = manual ];
 then
     echo "LEGO command: sudo lego $registration $val_manual $eab $domain" 
     sudo lego $registration $val_manual $eab $domain
+    echo "Attempting to restart web server: $server"
+    sudo systemctl restart $server
     echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
     exit
 fi
@@ -134,6 +139,8 @@ then
     . /etc/lego/scripts/azure_credentials
     echo "LEGO command: sudo lego $registration $val_azure $eab $domain"
     sudo -E lego $registration $val_azure $eab $domain
+    echo "Attempting to restart web server: $server"
+    sudo systemctl restart $server
     echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
     exit
 fi

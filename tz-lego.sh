@@ -125,8 +125,8 @@ val_manual="--dns manual"
 val_azure="--dns azuredns"
 
 #domains
-domain="--domains "${domain:?}" --key-type rsa2048 run"
-domain_renew="--domains "${domain:?}" --key-type rsa2048 renew"
+domain_var="--domains "${domain:?}" --key-type rsa2048 run"
+domain_renew_var="--domains "${domain:?}" --key-type rsa2048 renew"
 
 read -n 1 -p "Do you want to create a cronjob for automatic renewal? (y/n): " cronjob_choice
 echo
@@ -146,15 +146,15 @@ fi
 # pre-validated
 if [ $validation = manual ]; 
 then
-    echo "LEGO command: sudo lego $registration $val_manual $eab $domain" 
-    sudo lego $registration $val_manual $eab $domain
+    echo "LEGO command: sudo lego $registration $val_manual $eab $domain_var" 
+    sudo lego $registration $val_manual $eab $domain_var
     echo "Attempting to restart web server: $server"
     sudo systemctl restart $server
     if [ $renewal = yes ]; then
         echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
         echo "# Renewal job for: $domain" >> /etc/lego/scripts/renewal.sh
         echo ". /home/jn/.lego/scripts/lego-env" >> /etc/lego/scripts/renewal.sh
-        echo "sudo lego $registration $val_manual $eab $domain_renew" >> /etc/lego/scripts/renewal.sh
+        echo "sudo lego $registration $val_manual $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
         # sudo lego --server https://emea.acme.atlas.globalsign.com/directory --email test123@test.com -a --dns manual --eab --kid d87cde73ba31fa59 --hmac gJ2GEaeH-cEdyIk_om97z8OYZ-C5SJw_aLcRtPuRrJOM8v69k4Ac0c12eksZqnlVuDgagnMZZm-RtFjIA4uioFXmX588Unk2WDRjlSYXwETC1HRGDiqEfYOaz9tkMmcN5WO-_usK53gZXgk4wqpcL9XZtc7nITTowMLl9S9c1pc --domains learning.alfassl.com --key-type rsa2048 renew --days 397
 
         echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh

@@ -127,18 +127,16 @@ domain_renew="--domains "${domain:?}" --key-type rsa2048 renew"
 
 read -n 1 -p "Do you want to create a cronjob for automatic renewal? (y/n): " cronjob_choice
 echo
-    if [[ "$cronjob_choice" == "y" ]]; then
-        renewal="yes"
-        echo "Selecting automatic renewal"
-        job='0 8 * * * /etc/lego/scripts/renewal.sh' 
-        (crontab -l 2>/dev/null | grep -Fxq -- "$job") || (crontab -l 2>/dev/null; printf '%s\n' "$job") | crontab - 
-        echo
-        return
-    else 
-        echo "Selecting manual renewal"
-        renewal="no"
-        echo
-    fi
+if [[ "$cronjob_choice" == "y" ]]; then
+    renewal="yes"
+    echo "Selecting automatic renewal"
+    job='0 8 * * * /etc/lego/scripts/renewal.sh' 
+    (crontab -l 2>/dev/null | grep -Fxq -- "$job") || (crontab -l 2>/dev/null; printf '%s\n' "$job") | crontab - 
+    echo
+else 
+    echo "Selecting manual renewal"
+    renewal="no"
+    echo
 fi
 
 

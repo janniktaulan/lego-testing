@@ -194,11 +194,13 @@ then
     exit
 fi
 
-
+# How can we give lego/snap access to /etc/apache2
+# HTTP is not supported when installed using snap - snap gives no rights to anywhere other than the snap folder.
 
 # test wildcard implementering
-# HTTP implementering
+
 # Flere DNS udbydere end Azure?
 # PT virker det kun med et set credentials. Kan vi implementere en måde at råde over flere credentials på?
 
 # Cronjob supports 1 renewal right now, and also does not delete existing, it just fills into the renewal.sh, possibly breaking it.
+# HTTP is not supported when installed using snap - snap gives no rights to anywhere other than the snap folder.

@@ -123,6 +123,7 @@ eab="--eab --kid "${eab_kid:?}" --hmac "${eab_hmac:?}""
 #dns vars
 val_manual="--dns manual"
 val_azure="--dns azuredns"
+val_http="--http --http.webroot /var/www/html"
 
 #domains
 domain_var="--domains "${domain:?}" --key-type rsa2048 run"
@@ -152,7 +153,6 @@ then
     sudo systemctl restart $server
     if [ $renewal = yes ]; then
         echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
-        # echo ". /home/jn/.lego/scripts/lego-env" >> /etc/lego/scripts/renewal.sh
         echo "sudo lego $registration $val_manual $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
         echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
         echo "" >> /etc/lego/scripts/renewal.sh
@@ -168,23 +168,38 @@ then
     sudo -E lego $registration $val_azure $eab $domain
     echo "Attempting to restart web server: $server"
     sudo systemctl restart $server
+    if [ $renewal = yes ]; then
+        echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
+        echo ". /etc/lego/scripts/azure_credentials" >> /etc/lego/scripts/renewal.sh
+        echo "sudo lego $registration $val_azure $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
+        echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
+        echo "" >> /etc/lego/scripts/renewal.sh
+    fi
     echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
     exit
 fi
 
-#if [ $validation = http ]; 
-#then
-#    echo "LEGO command: sudo lego $registration --http --http.webroot /var/www/html $eab $domain"
-#    sudo lego $registration --http --http.webroot /var/www/html $eab $domain
-#    echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
-#    exit
-#fi
+if [ $validation = http ]; 
+then
+    echo "LEGO command: sudo lego $registration $val_http $eab $domain"
+    sudo lego $registration $val_http $eab $domain
+    echo "Attempting to restart web server: $server"
+    sudo systemctl restart $server
+    if [ $renewal = yes ]; then
+        echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
+        echo "sudo lego $registration $val_http $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
+        echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
+        echo "" >> /etc/lego/scripts/renewal.sh
+    fi
+    echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
+    exit
+fi
 
 
-# OPDATER RENEW.SH TIL NUVÆRENDE FORMAT
 
-# vil du specificere hvor certifikaterne skal ligge?
 # test wildcard implementering
 # HTTP implementering
 # Flere DNS udbydere end Azure?
 # PT virker det kun med et set credentials. Kan vi implementere en måde at råde over flere credentials på?
+
+# Cronjob supports 1 renewal right now, and also does not delete existing, it just fills into the renewal.sh, possibly breaking it.

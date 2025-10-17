@@ -6,8 +6,8 @@ if [ ! -x "$(which lego)" ]; then
 fi
 mkdir -p /etc/lego/scripts/
 
-if ! [ -e "/etc/lego/scripts/renew.sh" ] ; then
-    touch "/etc/lego/scripts/renew.sh"
+if ! [ -e "/etc/lego/scripts/renewal.sh" ] ; then
+    touch "/etc/lego/scripts/renewal.sh"
 fi
 
 function read_credentials() {

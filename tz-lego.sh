@@ -48,6 +48,30 @@ function dns_full() {
     chmod 600 /etc/lego/scripts/azure_credentials
 }
 
+# Prompt for web server type
+echo "Which web server are you ordering a certificate for?"
+echo "1: Nginx"
+echo "2: Apache"
+read -n 1 -p "Enter choice [1-2]: " server_choice
+echo
+
+case $server_choice in
+    1)
+        server="nginx"
+        echo "Server: Nginx"
+        echo
+        ;;
+    2)
+        server="apache"
+        echo "Server: Apache"
+        echo
+        ;;
+    *)
+        echo "Invalid choice. Exiting."
+        exit 1
+        ;;
+esac
+
 # Prompt for validation method
 echo "How do you want to validate?"
 echo "1: Pre-validated domain"

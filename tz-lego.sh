@@ -122,7 +122,7 @@ eab="--eab --kid "${eab_kid:?}" --hmac "${eab_hmac:?}""
 #dns vars
 val_manual="--dns manual"
 val_azure="--dns azuredns"
-val_http="--http --http.webroot /var/www/html"
+val_http="--http"
 
 #domains
 domain_var="--domains "${domain:?}" --key-type rsa2048 run"

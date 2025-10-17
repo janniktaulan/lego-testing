@@ -147,7 +147,7 @@ fi
 if [ $validation = manual ]; 
 then
     echo "LEGO command: sudo lego $registration $val_manual $eab $domain" 
-    sudo lego --path ~/test-cert/ $registration $val_manual $eab $domain
+    sudo lego --path /home/jn/test-cert/ $registration $val_manual $eab $domain
     echo "Attempting to restart web server: $server"
     sudo systemctl restart $server
     if [ $renewal = yes ]; then
@@ -181,6 +181,8 @@ fi
 #    exit
 #fi
 
+# vil du specificere hvor certifikaterne skal ligge?
+# test wildcard implementering
 # cronjob implementering - opret cronjob HVIS DET IKKE FINDES ALLEREDE
 # cronjob script - hvordan kan vi styre hvilke domains der skal slettes, hvis man har flere?
 # HTTP implementering

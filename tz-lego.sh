@@ -102,7 +102,6 @@ case $validation_choice in
         echo "MODE: HTTP Validation"
         echo
         read_credentials
-        http_validation  # You may need to implement this function if not present
         ;;
     *)
         echo "Invalid choice. Exiting."
@@ -164,8 +163,8 @@ fi
 if [ $validation = azure ]; 
 then
     . /etc/lego/scripts/azure_credentials
-    echo "LEGO command: sudo lego $registration $val_azure $eab $domain"
-    sudo -E lego $registration $val_azure $eab $domain
+    echo "LEGO command: sudo lego $registration $val_azure $eab $domain_var"
+    sudo -E lego $registration $val_azure $eab $domain_var
     echo "Attempting to restart web server: $server"
     sudo systemctl restart $server
     if [ $renewal = yes ]; then
@@ -181,8 +180,8 @@ fi
 
 if [ $validation = http ]; 
 then
-    echo "LEGO command: sudo lego $registration $val_http $eab $domain"
-    sudo lego $registration $val_http $eab $domain
+    echo "LEGO command: sudo lego $registration $val_http $eab $domain_var"
+    sudo lego $registration $val_http $eab $domain_var
     echo "Attempting to restart web server: $server"
     sudo systemctl restart $server
     if [ $renewal = yes ]; then

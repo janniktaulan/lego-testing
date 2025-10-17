@@ -106,6 +106,7 @@ case $validation_choice in
         exit 1
         ;;
 esac
+
 #reg var
 # Always source user credentials before using eab_kid and eab_hmac
 if [ -f /etc/lego/scripts/user_credentials ]; then
@@ -122,6 +123,24 @@ val_azure="--dns azuredns"
 
 #domains
 domain="--domains "${domain:?}" --key-type rsa2048 run"
+domain_renew="--domains "${domain:?}" --key-type rsa2048 renew"
+
+read -n 1 -p "Do you want to create a cronjob for automatic renewal? (y/n): " cronjob_choice
+echo
+    if [[ "$cronjob_choice" == "y" ]]; then
+        renewal="yes"
+        echo "Selecting automatic renewal"
+        job='0 8 * * * /etc/lego/scripts/renewal.sh' 
+        (crontab -l 2>/dev/null | grep -Fxq -- "$job") || (crontab -l 2>/dev/null; printf '%s\n' "$job") | crontab - 
+        echo
+        return
+    else 
+        echo "Selecting manual renewal"
+        renewal="no"
+        echo
+    fi
+fi
+
 
 # pre-validated
 if [ $validation = manual ]; 
@@ -130,6 +149,13 @@ then
     sudo lego $registration $val_manual $eab $domain
     echo "Attempting to restart web server: $server"
     sudo systemctl restart $server
+    if [ $renewal = yes ]; then
+        echo "Creating cronjob for automatic renewal"
+        mkdir -p /etc/lego/scripts/
+        echo ". /home/jn/.lego/scripts/lego-env" > /etc/lego/scripts/renewal.sh
+        echo "sudo lego $registration $val_manual $eab $domain_renew" >> /etc/lego/scripts/renewal.sh
+        echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
+    fi
     echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
     exit
 fi
@@ -153,7 +179,8 @@ fi
 #    exit
 #fi
 
-# cronjob implementering - evt opret en liste som scriptet kan bruge til at vedligeholde cronjobs.
+# cronjob implementering - opret cronjob HVIS DET IKKE FINDES ALLEREDE
+# cronjob script - hvordan kan vi styre hvilke domains der skal slettes, hvis man har flere?
 # HTTP implementering
 # Flere DNS udbydere end Azure?
 # PT virker det kun med et set credentials. Kan vi implementere en måde at råde over flere credentials på?

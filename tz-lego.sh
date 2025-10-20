@@ -66,6 +66,7 @@ echo "Welcome to TZ-Bot."
 echo "Options:"
 echo "1. Order a new certificate"
 echo "2. List renewals"
+echo "3. Exit"
 read -n 1 -p "Enter choice [1-2]: " initial_choice
 echo
 case $initial_choice in
@@ -76,13 +77,47 @@ case $initial_choice in
     2)
         echo "Current cronjob renewals:"
         grep -oP '(?<=--domains ).*(?= --key-type)' /etc/lego/scripts/renewal.sh 
+        start_prompt
         echo
+        ;;
+    3)
+        echo "Exiting."
+        exit 0
         ;;
     *)
         echo "Invalid choice. Exiting."
         exit 1
         ;;
 esac
+function start_prompt() {
+echo "Options:"
+echo "1. Order a new certificate"
+echo "2. List renewals"
+echo "3. Exit"
+read -n 1 -p "Enter choice [1-2]: " initial_choice
+echo
+case $initial_choice in
+    1)
+        echo "You selected to order a new certificate."
+
+        echo
+        ;;
+    2)
+        echo "Current cronjob renewals:"
+        grep -oP '(?<=--domains ).*(?= --key-type)' /etc/lego/scripts/renewal.sh 
+        start_prompt
+        echo
+        ;;
+    3)
+        echo "Exiting."
+        exit 0
+        ;;
+    *)
+        echo "Invalid choice. Exiting."
+        exit 1
+        ;;
+esac
+}
 # Prompt for web server type
 echo "Which web server are you ordering a certificate for?"
 echo "1: Nginx"

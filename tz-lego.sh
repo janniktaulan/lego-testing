@@ -149,7 +149,8 @@ else
     echo
 fi
 
-read -n 1 -p "Do you want to specify the path to save the certificates? (y/n): " custom_path_choice
+echo "Do you want to specify the path to save the certificates? (y/n)" custom_path_choice
+read -n 1 -p "This will move ALL certificates to the specified path, including those from other domains." custom_path_choice
 echo
 if [[ "$custom_path_choice" == "y" ]]; then
     read -p "Please enter the full path to save the certificates (e.g., /etc/ssl/certs): " custom_path

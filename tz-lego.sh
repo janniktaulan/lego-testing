@@ -166,7 +166,7 @@ if [[ "$custom_path_choice" == "y" ]]; then
 fi
 
 # pre-validated
-if [ $validation = manual ]; 
+if [[ $validation = manual ]]; 
 then
     echo "LEGO command: sudo lego $registration $val_manual $eab $domain_var" 
     sudo lego $registration $val_manual $eab $domain_var
@@ -181,8 +181,7 @@ then
         echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
         echo "" >> /etc/lego/scripts/renewal.sh
     fi
-    if [ $path = true ]; 
-    then
+       if [[ $path = true ]]; then
         copy_certs
     else
         echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
@@ -190,7 +189,7 @@ then
     exit
 fi
 
-if [ $validation = azure ]; 
+if [[ $validation = azure ]]; 
 then
     . /etc/lego/scripts/azure_credentials
     echo "LEGO command: sudo lego $registration $val_azure $eab $domain_var"
@@ -207,8 +206,7 @@ then
         echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
         echo "" >> /etc/lego/scripts/renewal.sh
     fi
-    if [ $path = true ]; 
-    then
+       if [[ $path = true ]]; then
         copy_certs
     else
         echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
@@ -216,7 +214,7 @@ then
     exit
 fi
 
-if [ $validation = http ]; 
+if [[ $validation = http ]]; 
 then
     echo "LEGO command: sudo lego $registration $val_http $eab $domain_var"
     sudo lego $registration $val_http $eab $domain_var

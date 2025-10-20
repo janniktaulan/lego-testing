@@ -71,14 +71,13 @@ echo
 case $initial_choice in
     1)
         echo "You selected to order a new certificate."
-
         echo
         ;;
     2)
         echo "Current cronjob renewals:"
-        grep -oP '(?<=--domains ).*(?= --key-type)' /etc/lego/scripts/renewal.sh 
-        start_prompt
+        grep -oP '(?<=--domains ).*(?= --key-type)' /etc/lego/scripts/renewal.sh
         echo
+        start_prompt
         ;;
     3)
         echo "Exiting."
@@ -122,8 +121,7 @@ esac
 echo "How do you want to validate?"
 echo "1: Pre-validated domain"
 echo "2: Azure DNS"
-echo "3: HTTP Validation (NOT SUPPORTED YET)"
-read -n 1 -p "Enter choice [1-3]: " validation_choice
+read -n 1 -p "Enter choice [1-2]: " validation_choice
 echo
 
 case $validation_choice in
@@ -139,12 +137,6 @@ case $validation_choice in
         echo
         read_credentials
         dns_full
-        ;;
-    3)
-        validation="http"
-        echo "MODE: HTTP Validation"
-        echo
-        read_credentials
         ;;
     *)
         echo "Invalid choice. Exiting."
@@ -196,7 +188,58 @@ if [[ "$custom_path_choice" == "y" ]]; then
     path="true"
 fi
 
-# pre-validated
+
+case $validation in
+    manual)
+        echo "LEGO command: sudo lego $registration $val_manual $eab $domain_var" 
+        sudo lego $registration $val_manual $eab $domain_var
+        echo "Attempting to restart web server: $server"
+        sudo systemctl restart $server
+        if [[ $renewal = yes ]]; then
+            echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
+            echo "sudo lego $registration $val_manual $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
+            if [[ $path = true ]]; then
+                echo "sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"" >> /etc/lego/scripts/renewal.sh
+            fi
+            echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
+            echo "" >> /etc/lego/scripts/renewal.sh
+        fi
+        if [[ $path = true ]]; then
+            copy_certs
+        else
+            echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
+        fi
+        exit
+        ;;
+    azure)
+        . /etc/lego/scripts/azure_credentials
+        echo "LEGO command: sudo lego $registration $val_azure $eab $domain_var"
+        sudo -E lego $registration $val_azure $eab $domain_var
+        echo "Attempting to restart web server: $server"
+        sudo systemctl restart $server
+        if [[ $renewal = yes ]]; then
+            echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
+            echo ". /etc/lego/scripts/azure_credentials" >> /etc/lego/scripts/renewal.sh
+            echo "sudo lego $registration $val_azure $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
+            if [[ $path = true ]]; then
+                echo "sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"" >> /etc/lego/scripts/renewal.sh
+            fi
+            echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
+            echo "" >> /etc/lego/scripts/renewal.sh
+        fi
+        if [[ $path = true ]]; then
+            copy_certs
+        else
+            echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
+        fi
+        exit
+        ;;
+    *)
+        echo "internal error"
+        exit 1
+        ;;
+esac
+
 if [[ $validation = manual ]]; 
 then
     echo "LEGO command: sudo lego $registration $val_manual $eab $domain_var" 

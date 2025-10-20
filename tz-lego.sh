@@ -5,6 +5,7 @@ if [ ! -x "$(which lego)" ]; then
    exit 1
 fi
 mkdir -p /etc/lego/scripts/
+mkdir -p /etc/lego/certs/
 
 if ! [ -e "/etc/lego/scripts/renewal.sh" ] ; then
     echo "#!/bin/bash" > /etc/lego/scripts/renewal.sh
@@ -158,7 +159,7 @@ echo "This will move ALL certificates to the specified path, including those fro
 read -n 1 -p "Please select a choice. (y/n): " custom_path_choice
 echo
 if [[ "$custom_path_choice" == "y" ]]; then
-    read -p "Please enter the full path to save the certificates (e.g., /etc/ssl/certs): " custom_path
+    read -p "Please enter the full path to save the certificates (e.g., /etc/lego/certs): " custom_path
     echo "Custom path selected: $custom_path"
     echo
     path="true"
@@ -171,10 +172,10 @@ then
     sudo lego $registration $val_manual $eab $domain_var
     echo "Attempting to restart web server: $server"
     sudo systemctl restart $server
-    if [ $renewal = yes ]; then
+    if [[ $renewal = yes ]]; then
         echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
         echo "sudo lego $registration $val_manual $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
-        if [ $path = true ]; then
+       if [[ $path = true ]]; then
             echo "sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"" >> /etc/lego/scripts/renewal.sh
         fi
         echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
@@ -196,11 +197,11 @@ then
     sudo -E lego $registration $val_azure $eab $domain_var
     echo "Attempting to restart web server: $server"
     sudo systemctl restart $server
-    if [ $renewal = yes ]; then
+    if [[ $renewal = yes ]]; then
         echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
         echo ". /etc/lego/scripts/azure_credentials" >> /etc/lego/scripts/renewal.sh
         echo "sudo lego $registration $val_azure $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
-        if [ $path = true ]; then
+        if [[ $path = true ]]; then
             echo "sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"" >> /etc/lego/scripts/renewal.sh
         fi
         echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
@@ -221,17 +222,16 @@ then
     sudo lego $registration $val_http $eab $domain_var
     echo "Attempting to restart web server: $server"
     sudo systemctl restart $server
-    if [ $renewal = yes ]; then
+    if [[ $renewal = yes ]]; then
         echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
         echo "sudo lego $registration $val_http $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
-        if [ $path = true ]; then
+       if [[ $path = true ]]; then
             echo "sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"" >> /etc/lego/scripts/renewal.sh
         fi
         echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
         echo "" >> /etc/lego/scripts/renewal.sh
     fi
-    if [ $path = true ]; 
-    then
+       if [[ $path = true ]]; then
         copy_certs
     else
         echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
@@ -241,7 +241,6 @@ fi
 
 # To do list:
 # we overwrite old certificates when we specify a path, no backup is made. However the certificates in the snap folder remain and are maintained by lego as usual.
-# HTTP is not supported when installed using snap - snap gives no rights to anywhere other than the snap folder.
 
 # test wildcard implementering
 

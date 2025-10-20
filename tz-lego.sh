@@ -239,6 +239,7 @@ function new_cert() {
             exit 1
             ;;
     esac
+}
 
 # Initial promp
 echo "Welcome to TZ-Bot."

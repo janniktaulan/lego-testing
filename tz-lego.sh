@@ -91,9 +91,6 @@ function start_prompt() {
             ;;
     esac
 }
-# Initial promp
-echo "Welcome to TZ-Bot."
-start_prompt
 
 function new_cert() {
 # Prompt for web server type
@@ -243,7 +240,12 @@ function new_cert() {
             ;;
     esac
 
+# Initial promp
+echo "Welcome to TZ-Bot."
+start_prompt
+
 # To do list:
+# put function on top and then call it
 # add support for managing renewals
 # we overwrite old certificates when we specify a path, no backup is made. However the certificates in the snap folder remain and are maintained by lego as usual.
 

@@ -174,6 +174,9 @@ then
     if [ $renewal = yes ]; then
         echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
         echo "sudo lego $registration $val_manual $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
+        if [ $path = true ]; then
+            echo "sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"" >> /etc/lego/scripts/renewal.sh
+        fi
         echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
         echo "" >> /etc/lego/scripts/renewal.sh
     fi
@@ -197,6 +200,9 @@ then
         echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
         echo ". /etc/lego/scripts/azure_credentials" >> /etc/lego/scripts/renewal.sh
         echo "sudo lego $registration $val_azure $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
+        if [ $path = true ]; then
+            echo "sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"" >> /etc/lego/scripts/renewal.sh
+        fi
         echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
         echo "" >> /etc/lego/scripts/renewal.sh
     fi
@@ -218,6 +224,9 @@ then
     if [ $renewal = yes ]; then
         echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
         echo "sudo lego $registration $val_http $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
+        if [ $path = true ]; then
+            echo "sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"" >> /etc/lego/scripts/renewal.sh
+        fi
         echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
         echo "" >> /etc/lego/scripts/renewal.sh
     fi
@@ -231,8 +240,7 @@ then
 fi
 
 # To do list:
-# we overwrite old certificates when we specify a path, no backup is made. However the certificates in the snap folder remain.
-# can we execute a script that moves the certs to a specific location after ordering / renewing?
+# we overwrite old certificates when we specify a path, no backup is made. However the certificates in the snap folder remain and are maintained by lego as usual.
 # HTTP is not supported when installed using snap - snap gives no rights to anywhere other than the snap folder.
 
 # test wildcard implementering

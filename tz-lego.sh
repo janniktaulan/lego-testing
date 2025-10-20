@@ -10,7 +10,36 @@ mkdir -p /etc/lego/certs/
 if ! [ -e "/etc/lego/scripts/renewal.sh" ] ; then
     echo "#!/bin/bash" > /etc/lego/scripts/renewal.sh
 fi
-
+function renewal_management() {
+    echo "Options:"
+    echo "1. Remove a cronjob renewal"
+    echo "2. Back to main menu"
+    read -n 1 -p "Enter choice [1-2]: " renewal_choice
+    echo
+    case $renewal_choice in
+        1)
+            read -p "Please enter the domain of the renewal you want to remove: " remove_domain
+            echo "Selection:"
+            echo "sudo grep -noP '(?<=--domains )\"$remove_domain\".*(?= --key-type)' /etc/lego/scripts/renewal.sh"
+            read -n 1 -p "Do you want to proceed with the removal? (y/n): " confirm_removal
+            echo
+            if [[ "$confirm_removal" == "y" ]]; then
+                echo "Removing renewal for domain: $remove_domain"
+                exit 1
+            else
+                echo "Removal cancelled."
+                renewal_management
+            fi
+            ;;
+        2)
+            start_prompt
+            ;;
+        *)
+            echo "Invalid choice. Exiting."
+            exit 1
+            ;;
+    esac
+}
 function copy_certs() {
         echo "Copying certificates to custom path: $custom_path"
         if sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"; then
@@ -79,7 +108,7 @@ function start_prompt() {
             echo "Current cronjob renewals:"
             grep -oP '(?<=--domains ).*(?= --key-type)' /etc/lego/scripts/renewal.sh
             echo
-            start_prompt
+            renewal_management
             ;;
         3)
             echo "Exiting."
@@ -93,7 +122,7 @@ function start_prompt() {
 }
 
 function new_cert() {
-# Prompt for web server type
+    # Prompt for web server type
     echo "Which web server are you ordering a certificate for?"
     echo "1: Nginx"
     echo "2: Apache"
@@ -178,7 +207,7 @@ function new_cert() {
 
     echo "Do you want to specify the path to save the certificates?"
     echo "The path must exist, since this script will not create it."
-    echo "This will move ALL certificates to the specified path, including those from other domains."
+    echo "This will copy ALL certificates from lego to the specified path, including those from other domains."
     read -n 1 -p "Please select a choice. (y/n): " custom_path_choice
     echo
     if [[ "$custom_path_choice" == "y" ]]; then
@@ -241,12 +270,11 @@ function new_cert() {
     esac
 }
 
-# Initial promp
+# Initial prompt
 echo "Welcome to TZ-Bot."
 start_prompt
 
 # To do list:
-# put function on top and then call it
 # add support for managing renewals
 # we overwrite old certificates when we specify a path, no backup is made. However the certificates in the snap folder remain and are maintained by lego as usual.
 

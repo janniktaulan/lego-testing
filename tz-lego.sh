@@ -10,6 +10,13 @@ if ! [ -e "/etc/lego/scripts/renewal.sh" ] ; then
     echo "#!/bin/bash" > /etc/lego/scripts/renewal.sh
 fi
 
+function copy_certs() {
+        echo "Copying certificates to custom path: $custom_path"
+        sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"
+        echo "Certificates moved to: $custom_path"
+        exit
+}
+
 function read_credentials() {
     if test -f /etc/lego/scripts/user_credentials; then
     read -n 1 -p "Do you want to reuse saved EAB credentials? (y/n): " reuse_eab
@@ -142,6 +149,14 @@ else
     echo
 fi
 
+read -n 1 -p "Do you want to specify the path to save the certificates? (y/n): " custom_path_choice
+echo
+if [[ "$custom_path_choice" == "y" ]]; then
+    read -p "Please enter the full path to save the certificates (e.g., /etc/ssl/certs): " custom_path
+    echo "Custom path selected: $custom_path"
+    echo
+    path="true"
+fi
 
 # pre-validated
 if [ $validation = manual ]; 
@@ -194,7 +209,13 @@ then
     exit
 fi
 
-# How can we give lego/snap access to /etc/apache2
+if [ $path = true ]; 
+then
+    copy_certs
+fi
+
+# To do list:
+# can we execute a script that moves the certs to a specific location after ordering / renewing?
 # HTTP is not supported when installed using snap - snap gives no rights to anywhere other than the snap folder.
 
 # test wildcard implementering
@@ -204,3 +225,4 @@ fi
 
 # Cronjob supports 1 renewal right now, and also does not delete existing, it just fills into the renewal.sh, possibly breaking it.
 # HTTP is not supported when installed using snap - snap gives no rights to anywhere other than the snap folder.
+# Can only place certificates in the snap folder

@@ -12,8 +12,11 @@ fi
 
 function copy_certs() {
         echo "Copying certificates to custom path: $custom_path"
-        sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"
+        if sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"; then
         echo "Certificates moved to: $custom_path"
+        else
+        echo "Failed to copy certificates."
+        fi
         exit
 }
 
@@ -226,6 +229,7 @@ then
 fi
 
 # To do list:
+# we overwrite old certificates when we specify a path, no backup is made. However the certificates in the snap folder remain.
 # can we execute a script that moves the certs to a specific location after ordering / renewing?
 # HTTP is not supported when installed using snap - snap gives no rights to anywhere other than the snap folder.
 

@@ -149,8 +149,8 @@ else
     echo
 fi
 
-echo "Do you want to specify the path to save the certificates? (y/n)" custom_path_choice
-read -n 1 -p "This will move ALL certificates to the specified path, including those from other domains." custom_path_choice
+echo "Do you want to specify the path to save the certificates?"
+read -n 1 -p "This will move ALL certificates to the specified path, including those from other domains. (y/n): " custom_path_choice
 echo
 if [[ "$custom_path_choice" == "y" ]]; then
     read -p "Please enter the full path to save the certificates (e.g., /etc/ssl/certs): " custom_path
@@ -172,7 +172,12 @@ then
         echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
         echo "" >> /etc/lego/scripts/renewal.sh
     fi
-    echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
+    if [ $path = true ]; 
+    then
+        copy_certs
+    else
+        echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
+    fi
     exit
 fi
 
@@ -190,7 +195,12 @@ then
         echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
         echo "" >> /etc/lego/scripts/renewal.sh
     fi
-    echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
+    if [ $path = true ]; 
+    then
+        copy_certs
+    else
+        echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
+    fi
     exit
 fi
 
@@ -206,13 +216,13 @@ then
         echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
         echo "" >> /etc/lego/scripts/renewal.sh
     fi
-    echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
+    if [ $path = true ]; 
+    then
+        copy_certs
+    else
+        echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
+    fi
     exit
-fi
-
-if [ $path = true ]; 
-then
-    copy_certs
 fi
 
 # To do list:

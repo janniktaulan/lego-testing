@@ -61,7 +61,28 @@ function dns_full() {
     echo "export AZURE_ENVIRONMENT=\"public\"" >> /etc/lego/scripts/azure_credentials
     chmod 600 /etc/lego/scripts/azure_credentials
 }
-
+# Initial promp
+echo "Welcome to TZ-Bot."
+echo "Options:"
+echo "1. Order a new certificate"
+echo "2. List renewals"
+read -n 1 -p "Enter choice [1-2]: " initial_choice
+echo
+case $initial_choice in
+    1)
+        echo "You selected to order a new certificate."
+        echo
+        ;;
+    2)
+        echo "Current cronjob renewals:"
+        grep -oP '(?<=--domains ).*(?= --key-type)' /etc/lego/scripts/renewal.sh 
+        echo
+        ;;
+    *)
+        echo "Invalid choice. Exiting."
+        exit 1
+        ;;
+esac
 # Prompt for web server type
 echo "Which web server are you ordering a certificate for?"
 echo "1: Nginx"
@@ -133,7 +154,6 @@ eab="--eab --kid "${eab_kid:?}" --hmac "${eab_hmac:?}""
 #dns vars
 val_manual="--dns manual"
 val_azure="--dns azuredns"
-val_http="--http"
 
 #domains
 domain_var="--domains "${domain:?}" --key-type rsa2048 run"
@@ -201,29 +221,6 @@ then
         echo ". /etc/lego/scripts/azure_credentials" >> /etc/lego/scripts/renewal.sh
         echo "sudo lego $registration $val_azure $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
         if [[ $path = true ]]; then
-            echo "sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"" >> /etc/lego/scripts/renewal.sh
-        fi
-        echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
-        echo "" >> /etc/lego/scripts/renewal.sh
-    fi
-       if [[ $path = true ]]; then
-        copy_certs
-    else
-        echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
-    fi
-    exit
-fi
-
-if [[ $validation = http ]]; 
-then
-    echo "LEGO command: sudo lego $registration $val_http $eab $domain_var"
-    sudo lego $registration $val_http $eab $domain_var
-    echo "Attempting to restart web server: $server"
-    sudo systemctl restart $server
-    if [[ $renewal = yes ]]; then
-        echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
-        echo "sudo lego $registration $val_http $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
-       if [[ $path = true ]]; then
             echo "sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"" >> /etc/lego/scripts/renewal.sh
         fi
         echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh

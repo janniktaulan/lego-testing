@@ -284,14 +284,14 @@ echo "Welcome to TZ-Bot."
 start_prompt
 
 # To do list:
-# add support for managing renewals
-# we overwrite old certificates when we specify a path, no backup is made. However the certificates in the snap folder remain and are maintained by lego as usual.
 
 # test wildcard implementering
-
 # Flere DNS udbydere end Azure?
-# PT virker det kun med et set credentials. Kan vi implementere en måde at råde over flere credentials på?
 
-# Cronjob supports 1 renewal right now, and also does not delete existing, it just fills into the renewal.sh, possibly breaking it.
+# Notes:
+
+# Only works with 1 set of credentials, both for EAB and DNS.
+# Renewal management is implemented, however it works kind of quirky.
 # HTTP is not supported when installed using snap - snap gives no rights to anywhere other than the snap folder.
-# Can only place certificates in the snap folder
+# Can only place certificates in the snap folder, meaning that the --path option cannot be used. However we have a function in place that simply copies the entire folder, to another place.
+# Should we have an option to only copy the specific cert? Also no old certs are kept, lego overwrites existing certs when ordering new ones.

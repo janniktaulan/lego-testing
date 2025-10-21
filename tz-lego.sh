@@ -18,15 +18,14 @@ function renewal_management() {
     echo
     case $renewal_choice in
         1)
-            read -p "Please enter the domain of the renewal you want to remove: " remove_domain
-            echo "Selection:"
-            #sudo grep -noP '(?<=--domains )$remove_domain.*(?= --key-type)' /etc/lego/scripts/renewal.sh
-            sudo grep -noP "(?<=--domains )${remove_domain}.*(?= --key-type)" /etc/lego/scripts/renewal.sh
+            read -p "Please enter the number of the renewal you want to remove: " remove_domain
             read -n 1 -p "Do you want to proceed with the removal? (y/n): " confirm_removal
             echo
             if [[ "$confirm_removal" == "y" ]]; then
                 echo "Removing renewal for domain: $remove_domain"
-                exit 1
+                sudo sed -i.bak "${remove_domain}d" /etc/lego/scripts/renewal.sh
+                echo "Renewal removed."
+                start_prompt
             else
                 echo "Removal cancelled."
                 renewal_management
@@ -108,7 +107,7 @@ function start_prompt() {
         2)
             echo
             echo "Current cronjob renewals:"
-            grep -oP '(?<=--domains ).*(?= --key-type)' /etc/lego/scripts/renewal.sh
+            grep -noP '(?<=--domains ).*(?= --key-type)' /etc/lego/scripts/renewal.sh
             echo
             renewal_management
             ;;

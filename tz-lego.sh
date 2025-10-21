@@ -1,8 +1,15 @@
 #!/bin/bash
 
-if [ ! -x "$(which lego)" ]; then
-   echo "Please install lego using this command: sudo snap install lego"
-   exit 1
+if ! command -v lego >/dev/null 2>&1; then
+    echo "Lego is not installed. Attempting to install Lego using Snap..."
+    sudo snap install lego
+
+    # Re-check if certbot is now installed.
+    if ! command -v lego >/dev/null 2>&1; then
+        echo "Lego installation failed. Please install Lego manually, using this command: sudo snap install lego"
+        exit 1
+    fi
+fi
 fi
 mkdir -p /etc/lego/scripts/
 mkdir -p /etc/lego/certs/

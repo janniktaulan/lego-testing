@@ -248,7 +248,9 @@ function new_cert() {
                     echo "sudo systemctl restart apache2" >> /etc/lego/scripts/renewal.sh
                 fi
                 if [[ $path = true ]]; then
+                    if grep -q /var/snap/lego/common/.lego/certificates/* "/etc/lego/scripts/renewal.sh"; then
                     echo "sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"" >> /etc/lego/scripts/renewal.sh
+                    fi
                 fi
             fi
             if [[ $path = true ]]; then

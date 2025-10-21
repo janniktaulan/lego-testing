@@ -10,7 +10,6 @@ if ! command -v lego >/dev/null 2>&1; then
         exit 1
     fi
 fi
-fi
 mkdir -p /etc/lego/scripts/
 mkdir -p /etc/lego/certs/
 

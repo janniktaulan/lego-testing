@@ -222,7 +222,6 @@ function new_cert() {
     if [[ "$custom_path_choice" == "y" ]]; then
         read -p "Please enter the full path to save the certificates (e.g., /etc/lego/certs): " custom_path
         echo "Custom path selected: $custom_path"
-        copy_certs
         echo
         path="true"
     fi
@@ -248,15 +247,13 @@ function new_cert() {
                     echo "sudo systemctl restart apache2" >> /etc/lego/scripts/renewal.sh
                 fi
                 if [[ $path = true ]]; then
+                copy_certs
                     if grep -q /var/snap/lego/common/.lego/certificates/* "/etc/lego/scripts/renewal.sh"; then
                     echo "sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"" >> /etc/lego/scripts/renewal.sh
                     fi
-                fi
-            fi
-            if [[ $path = true ]]; then
-                copy_certs
-            else
+                else
                 echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
+                fi
             fi
             exit
             ;;

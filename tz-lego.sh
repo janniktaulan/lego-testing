@@ -31,7 +31,7 @@ function renewal_management() {
                 echo "Removing renewal for domain: $remove_domain"
                 sudo sed -i.bak "${remove_domain}d" /etc/lego/scripts/renewal.sh
                 echo "Renewal removed."
-                start_prompt
+                renewal_management
             else
                 echo "Removal cancelled."
                 renewal_management
@@ -102,7 +102,7 @@ function start_prompt() {
     echo "1. Order a new certificate"
     echo "2. List renewals"
     echo "3. Exit"
-    read -n 1 -p "Enter choice [1-2]: " initial_choice
+    read -n 1 -p "Enter choice [1-3]: " initial_choice
     echo
     case $initial_choice in
         1)

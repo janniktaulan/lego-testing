@@ -15,9 +15,10 @@ mkdir -p /etc/lego/certs/
 
 if ! [ -e "/etc/lego/scripts/renewal.sh" ] ; then
     echo "#!/bin/bash" > /etc/lego/scripts/renewal.sh
+    chmod 600 /etc/lego/scripts/renewal.sh
 fi
 function renewal_management() {
-    echo "Options:"
+    echo "Renewal management:"
     echo "1. Remove a cronjob renewal"
     echo "2. Back to main menu"
     read -n 1 -p "Enter choice [1-2]: " renewal_choice
@@ -25,7 +26,8 @@ function renewal_management() {
     case $renewal_choice in
         1)
             read -p "Please enter the number of the renewal you want to remove: " remove_domain
-            read -n 1 -p "Do you want to proceed with the removal? (y/n): " confirm_removal
+            echo "You selected to remove renewal for domain: $remove_domain"
+            read -n 1 -p "Are you sure you want to proceed with the removal? (y/n): " confirm_removal
             echo
             if [[ "$confirm_removal" == "y" ]]; then
                 echo "Removing renewal for domain: $remove_domain"
@@ -49,7 +51,7 @@ function renewal_management() {
 function copy_certs() {
         echo "Copying certificates to custom path: $custom_path"
         if sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"; then
-        echo "Certificates moved to: $custom_path"
+        echo "Certificates copied to: $custom_path"
         else
         echo "Failed to copy certificates."
         fi
@@ -220,6 +222,7 @@ function new_cert() {
     if [[ "$custom_path_choice" == "y" ]]; then
         read -p "Please enter the full path to save the certificates (e.g., /etc/lego/certs): " custom_path
         echo "Custom path selected: $custom_path"
+        copy_certs
         echo
         path="true"
     fi
@@ -291,8 +294,7 @@ start_prompt
 
 # To do list:
 
-# test wildcard implementering
-# Flere DNS udbydere end Azure?
+# test wildcard implementering *.learning.alfassl.com
 
 # Notes:
 

@@ -54,8 +54,8 @@ function copy_certs() {
         echo "Certificates copied to: $custom_path"
         else
         echo "Failed to copy certificates."
+        exit 1
         fi
-        exit
 }
 
 function read_credentials() {

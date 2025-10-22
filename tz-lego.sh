@@ -303,7 +303,7 @@ function new_cert() {
                     else
                         echo "Failed to copy certificates."
                     fi
-                fi
+                else
                 echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
                 fi
             fi

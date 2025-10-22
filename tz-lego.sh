@@ -64,6 +64,13 @@ function renewal_management() {
 
 function storage() {
     echo ""
+    if grep -q "path=" "/etc/lego/scripts/storage"; then
+        . /etc/lego/scripts/storage
+        echo "Current custom path for certificate storage: $path"
+    else
+        echo "No custom path set for certificate storage. Certificates are stored in the default lego directory."
+    fi
+    echo ""
     echo "Storage Settings:"
     echo "1. Set custom path for certificate storage"
     echo "2. Disable custom path"

@@ -1,26 +1,32 @@
 #!/bin/bash
-
-if ! command -v lego >/dev/null 2>&1; then
-    echo "Lego is not installed. Attempting to install Lego using Snap..."
-    sudo snap install lego
-
-    # Re-check if certbot is now installed.
+function upkeep() {
     if ! command -v lego >/dev/null 2>&1; then
-        echo "Lego installation failed. Please install Lego manually, using this command: sudo snap install lego"
-        exit 1
+        echo "Lego is not installed."
+        read -n 1 -p "Do you want TZ-bot to try installing Lego? (y/n): " install_choice
+        if [[ "$install_choice" == "y" ]]; then
+            echo "Installing Lego using Snap: "sudo snap install lego""
+            sudo snap install lego
+                if ! command -v lego >/dev/null 2>&1; then
+                echo "Lego installation failed. Please install Lego manually, using this command: sudo snap install lego"
+                exit 1
+                fi
+        else
+            echo "Lego is required to use TZ-bot. Please install Lego manually, using this command: sudo snap install lego"
+            exit 1
+        fi
     fi
-fi
-mkdir -p /etc/lego/scripts/
-mkdir -p /etc/lego/certs/
+    mkdir -p /etc/lego/scripts/
+    mkdir -p /etc/lego/certs/
 
-if ! [ -e "/etc/lego/scripts/storage" ] ; then
-    touch /etc/lego/scripts/storage
-fi
+    if ! [ -e "/etc/lego/scripts/storage" ] ; then
+        touch /etc/lego/scripts/storage
+    fi
 
-if ! [ -e "/etc/lego/scripts/renewal.sh" ] ; then
-    echo "#!/bin/bash" > /etc/lego/scripts/renewal.sh
-    chmod 600 /etc/lego/scripts/renewal.sh
-fi
+    if ! [ -e "/etc/lego/scripts/renewal.sh" ] ; then
+        echo "#!/bin/bash" > /etc/lego/scripts/renewal.sh
+        chmod 600 /etc/lego/scripts/renewal.sh
+    fi
+}
 function renewal_management() {
     echo ""
     echo "Renewal management:"
@@ -61,7 +67,6 @@ function renewal_management() {
             ;;
     esac
 }
-
 function storage() {
     echo ""
     if grep -q "path=" "/etc/lego/scripts/storage"; then
@@ -138,7 +143,6 @@ function copy_certs() {
             fi
         fi
 }
-
 function read_credentials() {
     if test -f /etc/lego/scripts/user_credentials; then
     read -n 1 -p "Do you want to reuse saved EAB credentials? (y/n): " reuse_eab
@@ -158,7 +162,6 @@ function read_credentials() {
     echo "export eab_hmac=\"$eab_hmac\"" >> /etc/lego/scripts/user_credentials
     chmod 600 /etc/lego/scripts/user_credentials
 }
-
 function dns_full() {
     if test -f /etc/lego/scripts/azure_credentials; then
     read -n 1 -p "Do you want to reuse saved Azure credentials? (y/n): " reuse_azure
@@ -212,7 +215,6 @@ function start_prompt() {
             ;;
     esac
 }
-
 function new_cert() {
     # Prompt for web server type
     echo "Which web server are you ordering a certificate for?"
@@ -374,13 +376,12 @@ function new_cert() {
     esac
 }
 
-# Initial prompt
+# Start
 echo "Welcome to TZ-Bot."
+upkeep
 start_prompt
 
 # To do list:
-
-#Fix CP i renewal script (skal ikke stå der flere gange)
 
 # Notes:
 

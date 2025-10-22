@@ -24,6 +24,7 @@ function upkeep() {
 
     if ! [ -e "/etc/lego/scripts/renewal.sh" ] ; then
         echo "#!/bin/bash" > /etc/lego/scripts/renewal.sh
+        echo ". /etc/lego/scripts/azure_credentials" >> /etc/lego/scripts/renewal.sh
         chmod 600 /etc/lego/scripts/renewal.sh
     fi
 }
@@ -167,19 +168,18 @@ function read_credentials() {
     chmod 600 /etc/lego/scripts/user_credentials
 }
 function dns_full() {
-    if test -f /etc/lego/scripts/azure_credentials; then
+    if grep -q "export AZURE" "/etc/lego/scripts/azure_credentials"; then
     read -n 1 -p "Do you want to reuse saved Azure credentials? (y/n): " reuse_azure
     echo
         if [[ "$reuse_azure" == "y" ]]; then
             return
-        else
-            sudo rm /etc/lego/scripts/azure_credentials
         fi
     fi
     read -p "Please enter your Azure Client ID: " azure_client_id
     read -p "Please enter your Azure Client Secret: " azure_client_secret
     read -p "Please enter your Azure Tenant ID: " azure_tenant_id
     read -p "Please enter your Azure Subscription ID: " azure_subscription_id
+    sudo rm /etc/lego/scripts/azure_credentials
     echo "export AZURE_CLIENT_ID=\"$azure_client_id\"" >> /etc/lego/scripts/azure_credentials
     echo "export AZURE_CLIENT_SECRET=\"$azure_client_secret\"" >> /etc/lego/scripts/azure_credentials
     echo "export AZURE_TENANT_ID=\"$azure_tenant_id\"" >> /etc/lego/scripts/azure_credentials
@@ -358,14 +358,14 @@ function new_cert() {
             ;;
         azure)
             . /etc/lego/scripts/azure_credentials
-            echo "LEGO command: sudo lego $registration $val_azure $eab $domain_var"
+            echo "LEGO command: sudo -E lego $registration $val_azure $eab $domain_var"
             sudo -E lego $registration $val_azure $eab $domain_var
             echo "Attempting to restart web server: $server"
             sudo systemctl restart $server
             if [[ $renewal = yes ]]; then
                 echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
                 echo ". /etc/lego/scripts/azure_credentials" >> /etc/lego/scripts/renewal.sh
-                echo "sudo lego $registration $val_azure $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
+                echo "sudo -E lego $registration $val_azure $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
                 if [[ $path = true ]]; then
                     echo "sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"" >> /etc/lego/scripts/renewal.sh
                 fi

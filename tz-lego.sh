@@ -287,9 +287,9 @@ function new_cert() {
 
     #domains
     if [[ "$domain" == "*."* ]]; then
-        domain_wc="${domain#*.}"
-        domain_var="--domains "${domain_wc:?}" --domains "${domain:?}" --key-type rsa2048 run"
-        domain_renew_var="--domains "${domain_wc:?}" --domains "${domain:?}" --key-type rsa2048 renew"
+        domain_non_wc="${domain#*.}"
+        domain_var="--domains "${domain:?}" --domains "${domain_non_wc:?}" --key-type rsa2048 run"
+        domain_renew_var="--domains "${domain:?}" --domains "${domain_non_wc:?}" --key-type rsa2048 renew"
     else
         domain_var="--domains "${domain:?}" --key-type rsa2048 run"
         domain_renew_var="--domains "${domain:?}" --key-type rsa2048 renew"

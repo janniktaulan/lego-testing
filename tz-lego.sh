@@ -353,6 +353,8 @@ function new_cert() {
                 else
                 echo "If you installed LEGO through snap, your certificate is here: /var/snap/lego/common/.lego/certificates"
                 fi
+                echo "Attempting to restart web server: $server"
+                sudo systemctl restart $server
             fi
             exit
             ;;

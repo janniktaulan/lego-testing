@@ -76,7 +76,7 @@ function storage() {
         1)
             read -p "Please enter the full path to save the certificates (e.g., /etc/lego/certs): " custom_path
             echo "Custom path selected: $custom_path"
-            echo "PATH=$custom_path" > /etc/lego/scripts/storage
+            echo "path=$custom_path" > /etc/lego/scripts/storage
             sudo sed -i.bak "/sudo cp \/var\/snap\/lego\/common\/.lego\/certificates\/*/d" /etc/lego/scripts/renewal.sh
             echo "sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"" >> /etc/lego/scripts/renewal.sh
             storage
@@ -116,12 +116,15 @@ function storage() {
     esac
 }
 function copy_certs() {
-        echo "Copying certificates to custom path: $custom_path"
-        if sudo cp /var/snap/lego/common/.lego/certificates/* "$custom_path"; then
-        echo "Certificates copied to: $custom_path"
-        else
-        echo "Failed to copy certificates."
-        exit 1
+        if grep -q "path=" "/etc/lego/scripts/storage"; then
+            . /etc/lego/scripts/storage
+            echo "Copying certificates to path: $path"
+            if sudo cp /var/snap/lego/common/.lego/certificates/* "$path"; then
+                echo "Certificates copied to: $path"
+            else
+                echo "Failed to copy certificates."
+            exit 1
+            fi
         fi
 }
 
@@ -314,6 +317,7 @@ function new_cert() {
                     echo "sudo systemctl restart apache2" >> /etc/lego/scripts/renewal.sh
                 fi
                 if grep -q "sudo cp /var/snap/lego/common/.lego/certificates/*" "/etc/lego/scripts/renewal.sh"; then
+                    . /etc/lego/scripts/storage
                     if sudo cp "/var/snap/lego/common/.lego/certificates/*" "$custom_path" >> /etc/lego/scripts/renewal.sh; then
                         echo "Certificates copied to: $custom_path"
                     else

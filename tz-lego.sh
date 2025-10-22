@@ -39,7 +39,8 @@ function renewal_management() {
         1)
             echo ""
             echo "Current cronjob renewals:"
-            grep -noP '(?<=--domains ).*(?= --key-type)' /etc/lego/scripts/renewal.sh
+            #grep -noP '(?<=--domains ).*(?= --key-type)' /etc/lego/scripts/renewal.sh
+            awk '{domain=""; wildcard=""; for(i=1;i<=NF;i++){if($i=="--domains"){d=$(i+1); if(d~/^\*\./){wildcard=d} else if(domain==""){domain=d}}} if(wildcard!=""){print NR ": " wildcard} else if(domain!=""){print NR ": " domain}}' /etc/lego/scripts/renewal.sh
             echo
             renewal_management
             ;;
@@ -50,8 +51,11 @@ function renewal_management() {
             echo
             if [[ "$confirm_removal" == "y" ]]; then
                 echo "Removing renewal for domain: $remove_domain"
-                sudo sed -i.bak "${remove_domain}d" /etc/lego/scripts/renewal.sh
-                echo "Renewal removed."
+                if sudo sed -i.bak "${remove_domain}d" /etc/lego/scripts/renewal.sh; then
+                    echo "Renewal removed from renewal script."
+                else
+                    echo "Failed to remove renewal from script."
+                fi
                 renewal_management
             else
                 echo "Removal cancelled."

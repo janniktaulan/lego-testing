@@ -177,6 +177,7 @@ function start_prompt() {
     echo
     case $initial_choice in
         1)
+            echo ""
             echo "You selected to order a new certificate."
             new_cert
             echo
@@ -299,6 +300,7 @@ function new_cert() {
                 sudo systemctl restart $server
             fi
             if [[ $renewal = yes ]]; then
+                echo "LEGO command: sudo lego $registration $val_manual $eab $domain_renew_var"
                 sudo lego $registration $val_manual $eab $domain_renew_var
                 echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
                 echo "sudo lego $registration $val_manual $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
@@ -312,7 +314,7 @@ function new_cert() {
                     echo "sudo systemctl restart apache2" >> /etc/lego/scripts/renewal.sh
                 fi
                 if grep -q "sudo cp /var/snap/lego/common/.lego/certificates/*" "/etc/lego/scripts/renewal.sh"; then
-                    if sudo cp "/var/snap/lego/common/.lego/certificates/* "$custom_path"" >> /etc/lego/scripts/renewal.sh; then
+                    if sudo cp "/var/snap/lego/common/.lego/certificates/*" "$custom_path" >> /etc/lego/scripts/renewal.sh; then
                         echo "Certificates copied to: $custom_path"
                     else
                         echo "Failed to copy certificates."

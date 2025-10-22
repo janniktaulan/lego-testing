@@ -282,8 +282,14 @@ function new_cert() {
     val_azure="--dns azuredns"
 
     #domains
-    domain_var="--domains "${domain:?}" --key-type rsa2048 run"
-    domain_renew_var="--domains "${domain:?}" --key-type rsa2048 renew"
+    if [[ "$domain" == "*."* ]]; then
+        domain_wc=$domain#*.
+        domain_var="--domains "${domain_wc:?}" --domains "${domain:?}" --key-type rsa2048 run"
+        domain_renew_var="--domains "${domain_wc:?}" --domains "${domain:?}" --key-type rsa2048 renew"
+    else
+        domain_var="--domains "${domain:?}" --key-type rsa2048 run"
+        domain_renew_var="--domains "${domain:?}" --key-type rsa2048 renew"
+    fi
 
     read -n 1 -p "Do you want to create a cronjob for automatic renewal? (y/n): " cronjob_choice
     echo
@@ -382,6 +388,8 @@ upkeep
 start_prompt
 
 # To do list:
+# check if first letter of $domain is a "*". If it is, we need to add a second --domains, so that we get both "*.example.com" and "example.com".
+# ${full_domain#*.}
 
 # Notes:
 

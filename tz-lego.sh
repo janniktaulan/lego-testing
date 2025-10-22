@@ -293,7 +293,7 @@ start_prompt
 
 # To do list:
 
-# test wildcard implementering *.learning.alfassl.com
+#Fix CP i renewal script (skal ikke stå der flere gange)
 
 # Notes:
 
@@ -302,3 +302,4 @@ start_prompt
 # HTTP is not supported when installed using snap - snap gives no rights to anywhere other than the snap folder.
 # Can only place certificates in the snap folder, meaning that the --path option cannot be used. However we have a function in place that simply copies the entire folder, to another place.
 # Should we have an option to only copy the specific cert? Also no old certs are kept, lego overwrites existing certs when ordering new ones.
+# Wilcard seems to be working just fine. I have not tested a deployment of one, only issuing it.

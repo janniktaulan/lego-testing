@@ -307,8 +307,8 @@ function new_cert() {
                 sudo systemctl restart $server
             fi
             if [[ $renewal = yes ]]; then
-                echo "LEGO command: sudo lego $registration $val_manual $eab $domain_renew_var"
-                sudo lego $registration $val_manual $eab $domain_renew_var
+                echo "LEGO command: sudo lego $registration $val_manual $eab $domain_var"
+                sudo lego $registration $val_manual $eab $domain_var
                 echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
                 echo "sudo lego $registration $val_manual $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
                 echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh

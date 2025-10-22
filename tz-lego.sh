@@ -295,7 +295,7 @@ function new_cert() {
             if [[ $renewal = no ]]; then
                 echo "LEGO command: sudo lego $registration $val_manual $eab $domain_var" 
                 sudo lego $registration $val_manual $eab $domain_var
-                if grep -q "sudo cp /var/snap/lego/common/.lego/certificates/*" "/etc/lego/scripts/renewal.sh"; then
+                if grep -q "path=" "/etc/lego/scripts/storage"; then
                     . /etc/lego/scripts/storage
                     if sudo cp "/var/snap/lego/common/.lego/certificates/* "$path"" >> /etc/lego/scripts/renewal.sh; then
                         echo "Certificates copied to: $path"
@@ -320,7 +320,7 @@ function new_cert() {
                     sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/lego/scripts/renewal.sh
                     echo "sudo systemctl restart apache2" >> /etc/lego/scripts/renewal.sh
                 fi
-                if grep -q "sudo cp /var/snap/lego/common/.lego/certificates/*" "/etc/lego/scripts/renewal.sh"; then
+                if grep -q "path=" "/etc/lego/scripts/storage"; then
                     . /etc/lego/scripts/storage
                     if sudo cp "/var/snap/lego/common/.lego/certificates/*" "$path" >> /etc/lego/scripts/renewal.sh; then
                         echo "Certificates copied to: $path"

@@ -78,7 +78,6 @@ function storage() {
             echo ""
             echo "Custom path selected: $path"
             echo ""
-            sudo sed -i.bak "/path=/d" /etc/lego/scripts/storage
             echo "path=$path" > /etc/lego/scripts/storage
             sudo sed -i.bak "/sudo cp \/var\/snap\/lego\/common\/.lego\/certificates\/*/d" /etc/lego/scripts/renewal.sh
             echo "sudo cp /var/snap/lego/common/.lego/certificates/* "$path"" >> /etc/lego/scripts/renewal.sh
@@ -89,7 +88,7 @@ function storage() {
             echo "Disabling custom path. Certificates will remain in the default lego directory."
             if grep -q "sudo cp /var/snap/lego/common/.lego/certificates/*" "/etc/lego/scripts/renewal.sh"; then
                 sudo sed -i.bak "/sudo cp \/var\/snap\/lego\/common\/.lego\/certificates\/*/d" /etc/lego/scripts/renewal.sh
-                sudo sed -i.bak "/path=/d" /etc/lego/scripts/storage
+                echo "" > /etc/lego/scripts/storage
                 echo "Custom path disabled."
             else
                 echo "Error: No custom path found in renewal script."

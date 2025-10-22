@@ -19,12 +19,20 @@ if ! [ -e "/etc/lego/scripts/renewal.sh" ] ; then
 fi
 function renewal_management() {
     echo "Renewal management:"
-    echo "1. Remove a cronjob renewal"
-    echo "2. Back to main menu"
+    echo "1. List renewals"
+    echo "2. Remove a cronjob renewal"
+    echo "3. Back to main menu"
     read -n 1 -p "Enter choice [1-2]: " renewal_choice
     echo
     case $renewal_choice in
         1)
+            echo
+            echo "Current cronjob renewals:"
+            grep -noP '(?<=--domains ).*(?= --key-type)' /etc/lego/scripts/renewal.sh
+            echo
+            renewal_management
+            ;;
+        2)
             read -p "Please enter the number of the renewal you want to remove: " remove_domain
             echo "You selected to remove renewal for domain: $remove_domain"
             read -n 1 -p "Are you sure you want to proceed with the removal? (y/n): " confirm_removal
@@ -39,7 +47,7 @@ function renewal_management() {
                 renewal_management
             fi
             ;;
-        2)
+        3)
             start_prompt
             ;;
         *)
@@ -151,9 +159,10 @@ function dns_full() {
     chmod 600 /etc/lego/scripts/azure_credentials
 }
 function start_prompt() {
+    echo
     echo "Options:"
     echo "1. Order a new certificate"
-    echo "2. List renewals"
+    echo "2. Renewal Management"
     echo "3. Storage Settings"
     echo "4. Exit"
     read -n 1 -p "Enter choice [1-3]: " initial_choice
@@ -165,10 +174,6 @@ function start_prompt() {
             echo
             ;;
         2)
-            echo
-            echo "Current cronjob renewals:"
-            grep -noP '(?<=--domains ).*(?= --key-type)' /etc/lego/scripts/renewal.sh
-            echo
             renewal_management
             ;;
         3)

@@ -7,7 +7,7 @@ function upkeep() {
             echo ""
             echo "Installing Lego..."
             sudo curl -L https://github.com/go-acme/lego/releases/download/v4.27.0/lego_v4.27.0_linux_386.tar.gz > /tmp/lego.tar.gz
-            tar -xvzf /tmp/lego.tar.gz > /tmp/lego
+            sudo tar -xvzf /tmp/lego.tar.gz -C /tmp/
             sudo mkdir -p /usr/local/bin
             sudo mv /tmp/lego /usr/local/bin/lego
             sudo chmod +x /usr/local/bin/lego

@@ -1,4 +1,4 @@
 sudo curl -L https://github.com/janniktaulan/lego-testing/releases/download/beta/tz-lego.sh > /tmp/tz-bot
 sudo mkdir -p /usr/local/bin
-sudo chmod +x /usr/local/bin/tz-bot
 sudo mv /tmp/tz-bot /usr/local/bin/tz-bot
+sudo chmod +x /usr/local/bin/tz-bot

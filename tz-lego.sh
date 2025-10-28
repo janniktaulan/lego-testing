@@ -58,7 +58,8 @@ function renewal_management() {
     echo "Renewal management:"
     echo "1. List renewals"
     echo "2. Remove a cronjob renewal"
-    echo "3. Back to main menu"
+    echo "3. Remove all cronjob renewals"
+    echo "4. Back to main menu"
     read -n 1 -p "Enter choice [1-3]: " renewal_choice
     echo
     case $renewal_choice in
@@ -89,6 +90,18 @@ function renewal_management() {
             fi
             ;;
         3)
+            echo "Are you sure you want to remove ALL cronjob renewals? This action cannot be undone."
+            read -n 1 -p "Type 'y' to confirm, or 'n' to cancel: " confirm_all_removal
+            echo
+            if [[ "$confirm_all_removal" != "y" ]]; then
+                sudo rm /etc/lego/scripts/renewal.sh
+                echo "#!/bin/bash" > /etc/lego/scripts/renewal.sh
+                echo "All renewals have been removed."
+            else
+                echo "Removal cancelled."
+            fi
+            ;;
+        4)
             start_prompt
             ;;
         *)

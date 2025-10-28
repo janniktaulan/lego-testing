@@ -97,8 +97,10 @@ function renewal_management() {
                 sudo rm /etc/lego/scripts/renewal.sh
                 echo "#!/bin/bash" > /etc/lego/scripts/renewal.sh
                 echo "All renewals have been removed."
+                renewal_management
             else
                 echo "Removal cancelled."
+                renewal_management
             fi
             ;;
         4)

@@ -172,7 +172,8 @@ function start_prompt() {
     echo "Options:"
     echo "1. Order a new certificate"
     echo "2. Renewal Management"
-    echo "3. Exit"
+    echo "3. Uninstall TZ-Bot and Lego"
+    echo "4. Exit"
     read -n 1 -p "Enter choice [1-3]: " initial_choice
     echo
     case $initial_choice in

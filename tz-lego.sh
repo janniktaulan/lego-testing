@@ -255,12 +255,13 @@ function new_cert() {
         . /etc/lego/scripts/storage
         path_var=$path
 
+    fi
+
     case $validation in
         manual)
             if [[ $renewal = no ]]; then
                 echo "LEGO command: sudo lego $registration $val_manual $path_var $eab $domain_var" 
                 sudo lego $registration $val_manual $path_var $eab $domain_var
-                fi
                 echo "Attempting to restart web server: $server"
                 sudo systemctl restart $server
             fi

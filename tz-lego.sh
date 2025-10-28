@@ -187,6 +187,10 @@ function start_prompt() {
             renewal_management
             ;;
         3)
+            echo "You selected to uninstall TZ-Bot and Lego."
+            /etc/lego/tz-bot-remover.sh
+            ;;
+        4)
             echo "Exiting."
             exit 0
             ;;

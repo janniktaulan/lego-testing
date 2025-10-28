@@ -167,6 +167,7 @@ function new_cert() {
     echo "Which web server are you ordering a certificate for?"
     echo "1: Nginx"
     echo "2: Apache"
+    echo "3: Other (No automatic restart)"
     read -n 1 -p "Enter choice [1-2]: " server_choice
     echo
 
@@ -179,6 +180,11 @@ function new_cert() {
         2)
             server="apache2"
             echo "Server: Apache"
+            echo
+            ;;
+        3)
+            server="other"
+            echo "Server: Other (No automatic restart)"
             echo
             ;;
         *)
@@ -283,9 +289,6 @@ function new_cert() {
             if [[ $renewal = no ]]; then
                 echo "LEGO command: sudo lego $registration $val_manual $path_var $eab $domain_var" 
                 sudo lego $registration $val_manual $path_var $eab $domain_var
-                echo "Attempting to restart web server: $server"
-                sudo systemctl restart $server
-                echo "Your certificate is here: $path"
             fi
             if [[ $renewal = yes ]]; then
                 echo "LEGO command: sudo lego $registration $val_manual $path_var $eab $domain_var"
@@ -301,6 +304,9 @@ function new_cert() {
                     sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/lego/scripts/renewal.sh
                     echo "sudo systemctl restart apache2" >> /etc/lego/scripts/renewal.sh
                 fi
+
+            fi
+            if [[ $server != "other" ]]; then
                 echo "Attempting to restart web server: $server"
                 sudo systemctl restart $server
                 echo "Your certificate is here: $path"
@@ -312,9 +318,6 @@ function new_cert() {
             if [[ $renewal = no ]]; then
                 echo "LEGO command: sudo -E lego $registration $val_azure $path_var $eab $domain_var"
                 sudo -E lego $registration $val_azure $path_var $eab $domain_var
-                echo "Attempting to restart web server: $server"
-                sudo systemctl restart $server
-                echo "Your certificate is here: $path"
             fi
             if [[ $renewal = yes ]]; then
                 echo "LEGO command: sudo -E lego $registration $val_azure $path_var $eab $domain_var"
@@ -334,6 +337,8 @@ function new_cert() {
                     sudo sed -i.bak "/. \/etc\/lego\/scripts\/azure_credentials/d" /etc/lego/scripts/renewal.sh
                     echo ". /etc/lego/scripts/azure_credentials" >> /etc/lego/scripts/renewal.sh
                 fi
+            fi
+            if [[ $server != "other" ]]; then
                 echo "Attempting to restart web server: $server"
                 sudo systemctl restart $server
                 echo "Your certificate is here: $path"
@@ -344,9 +349,6 @@ function new_cert() {
             if [[ $renewal = no ]]; then
                 echo "LEGO command: sudo lego $registration $val_http $path_var $eab $domain_var" 
                 sudo lego $registration $val_http $path_var $eab $domain_var
-                echo "Attempting to restart web server: $server"
-                sudo systemctl restart $server
-                echo "Your certificate is here: $path"
             fi
             if [[ $renewal = yes ]]; then
                 echo "LEGO command: sudo lego $registration $val_http $path_var $eab $domain_var"
@@ -362,6 +364,8 @@ function new_cert() {
                     sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/lego/scripts/renewal.sh
                     echo "sudo systemctl restart apache2" >> /etc/lego/scripts/renewal.sh
                 fi
+            fi
+            if [[ $server != "other" ]]; then
                 echo "Attempting to restart web server: $server"
                 sudo systemctl restart $server
                 echo "Your certificate is here: $path"

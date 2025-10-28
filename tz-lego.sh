@@ -264,6 +264,7 @@ function new_cert() {
                 sudo lego $registration $val_manual $path_var $eab $domain_var
                 echo "Attempting to restart web server: $server"
                 sudo systemctl restart $server
+                echo "Your certificate is here: $path"
             fi
             if [[ $renewal = yes ]]; then
                 echo "LEGO command: sudo lego $registration $val_manual $path_var $eab $domain_var"
@@ -281,6 +282,7 @@ function new_cert() {
                 fi
                 echo "Attempting to restart web server: $server"
                 sudo systemctl restart $server
+                echo "Your certificate is here: $path"
             fi
             exit
             ;;
@@ -291,6 +293,7 @@ function new_cert() {
                 sudo -E lego $registration $val_azure $path_var $eab $domain_var
                 echo "Attempting to restart web server: $server"
                 sudo systemctl restart $server
+                echo "Your certificate is here: $path"
             fi
             if [[ $renewal = yes ]]; then
                 echo "LEGO command: sudo -E lego $registration $val_azure $path_var $eab $domain_var"
@@ -312,6 +315,7 @@ function new_cert() {
                 fi
                 echo "Attempting to restart web server: $server"
                 sudo systemctl restart $server
+                echo "Your certificate is here: $path"
             fi
             exit
             ;;
@@ -321,6 +325,7 @@ function new_cert() {
                 sudo lego $registration $val_http $path_var $eab $domain_var
                 echo "Attempting to restart web server: $server"
                 sudo systemctl restart $server
+                echo "Your certificate is here: $path"
             fi
             if [[ $renewal = yes ]]; then
                 echo "LEGO command: sudo lego $registration $val_http $path_var $eab $domain_var"
@@ -338,6 +343,7 @@ function new_cert() {
                 fi
                 echo "Attempting to restart web server: $server"
                 sudo systemctl restart $server
+                echo "Your certificate is here: $path"
             fi
             exit
             ;;

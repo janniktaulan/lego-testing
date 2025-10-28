@@ -72,7 +72,11 @@ function renewal_management() {
             renewal_management
             ;;
         2)
-            read -p "Please enter the number of the renewal you want to remove: " remove_domain
+            read -p "Please enter the NUMBER of the renewal you want to remove: " remove_domain
+            if ! [[ "$remove_domain" =~ ^[0-9]+$ ]]; then
+                echo "Only input whole numbers, e.g., '5'"
+                renewal_management
+            fi
             echo "You selected to remove renewal for domain: $remove_domain"
             read -n 1 -p "Are you sure you want to proceed with the removal? (y/n): " confirm_removal
             echo

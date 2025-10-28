@@ -39,7 +39,7 @@ function renewal_management() {
     echo "1. List renewals"
     echo "2. Remove a cronjob renewal"
     echo "3. Back to main menu"
-    read -n 1 -p "Enter choice [1-2]: " renewal_choice
+    read -n 1 -p "Enter choice [1-3]: " renewal_choice
     echo
     case $renewal_choice in
         1)

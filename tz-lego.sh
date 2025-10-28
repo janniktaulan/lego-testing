@@ -248,12 +248,12 @@ function new_cert() {
         echo "Custom path selected: $custom_path"
         echo "path=$custom_path" > /etc/lego/scripts/storage
         . /etc/lego/scripts/storage
-        path_var=$path
+        path_var="--path $path"
         else
         echo "Using default path for certificate storage: /etc/lego/certs/"
         echo "path=/etc/lego/certs" > /etc/lego/scripts/storage
         . /etc/lego/scripts/storage
-        path_var=$path
+        path_var="--path $path"
 
     fi
 

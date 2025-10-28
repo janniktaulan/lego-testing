@@ -46,6 +46,9 @@ function upkeep() {
     if ! [ -e "/etc/lego/scripts/storage" ] ; then
         touch /etc/lego/scripts/storage
     fi
+        if ! [ -e "/etc/lego/scripts/azure_credentials" ] ; then
+        touch /etc/lego/scripts/azure_credentials
+    fi
 
     if ! [ -e "/etc/lego/scripts/renewal.sh" ] ; then
         echo "#!/bin/bash" > /etc/lego/scripts/renewal.sh
@@ -110,6 +113,7 @@ function renewal_management() {
             if [[ "$confirm_all_removal" = "y" ]]; then
                 sudo rm /etc/lego/scripts/renewal.sh
                 echo "#!/bin/bash" > /etc/lego/scripts/renewal.sh
+                echo ". /etc/lego/scripts/azure_credentials" >> /etc/lego/scripts/renewal.sh
                 echo "All renewals have been removed."
                 renewal_management
             else
@@ -342,7 +346,7 @@ function new_cert() {
                 sudo systemctl restart $server
             fi
             echo "Your certificate is here: $path"
-            exit
+            start_prompt
             ;;
         azure)
             . /etc/lego/scripts/azure_credentials
@@ -376,7 +380,7 @@ function new_cert() {
                 sudo systemctl restart $server
             fi
             echo "Your certificate is here: $path"
-            exit
+            start_prompt
             ;;
         http)
             if [[ $renewal = no ]]; then
@@ -405,10 +409,10 @@ function new_cert() {
                 sudo systemctl restart $server
             fi
             echo "Your certificate is here: $path"
-            exit
+            start_prompt
             ;;
         *)
-            echo "internal error"
+            echo "internal error in "new_cert" function"
             exit 1
             ;;
     esac

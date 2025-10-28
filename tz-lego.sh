@@ -64,33 +64,40 @@ function renewal_management() {
     echo
     case $renewal_choice in
         1)
-            echo ""
-            echo "Current cronjob renewals:"
-            #grep -noP '(?<=--domains ).*(?= --key-type)' /etc/lego/scripts/renewal.sh
-            awk '{domain=""; wildcard=""; for(i=1;i<=NF;i++){if($i=="--domains"){d=$(i+1); if(d~/^\*\./){wildcard=d} else if(domain==""){domain=d}}} if(wildcard!=""){print NR ": " wildcard} else if(domain!=""){print NR ": " domain}}' /etc/lego/scripts/renewal.sh
-            echo
+            if ! grep -q "sudo lego" "/etc/lego/scripts/renewal.sh"; then
+                echo "No renewals found."
+            else
+                echo ""
+                echo "Current cronjob renewals:"
+                awk '{domain=""; wildcard=""; for(i=1;i<=NF;i++){if($i=="--domains"){d=$(i+1); if(d~/^\*\./){wildcard=d} else if(domain==""){domain=d}}} if(wildcard!=""){print NR ": " wildcard} else if(domain!=""){print NR ": " domain}}' /etc/lego/scripts/renewal.sh
+                echo
+            fi
             renewal_management
             ;;
         2)
-            read -p "Please enter the NUMBER of the renewal you want to remove: " remove_domain
-            if ! [[ "$remove_domain" =~ ^[0-9]+$ ]]; then
-                echo "Only input whole numbers, e.g., '5'"
-                renewal_management
-            fi
-            echo "You selected to remove renewal for domain: $remove_domain"
-            read -n 1 -p "Are you sure you want to proceed with the removal? (y/n): " confirm_removal
-            echo
-            if [[ "$confirm_removal" == "y" ]]; then
-                echo "Removing renewal for domain: $remove_domain"
-                if sudo sed -i.bak "${remove_domain}d" /etc/lego/scripts/renewal.sh; then
-                    echo "Renewal removed from renewal script."
-                else
-                    echo "Failed to remove renewal from script."
+            if ! grep -q "sudo lego" "/etc/lego/scripts/renewal.sh"; then
+                echo "No renewals found."
+            else
+                read -p "Please enter the NUMBER of the renewal you want to remove: " remove_domain
+                if ! [[ "$remove_domain" =~ ^[0-9]+$ ]]; then
+                    echo "Only input whole numbers, e.g., '5'"
+                    renewal_management
+                fi
+                echo "You selected to remove renewal for domain: $remove_domain"
+                read -n 1 -p "Are you sure you want to proceed with the removal? (y/n): " confirm_removal
+                echo
+                if [[ "$confirm_removal" == "y" ]]; then
+                    echo "Removing renewal for domain: $remove_domain"
+                    if sudo sed -i.bak "${remove_domain}d" /etc/lego/scripts/renewal.sh; then
+                        echo "Renewal removed from renewal script."
+                    else
+                        echo "Failed to remove renewal from script."
                 fi
                 renewal_management
-            else
-                echo "Removal cancelled."
-                renewal_management
+                else
+                    echo "Removal cancelled."
+                    renewal_management
+                fi
             fi
             ;;
         3)

@@ -188,7 +188,14 @@ function start_prompt() {
             ;;
         3)
             echo "You selected to uninstall TZ-Bot and Lego."
-            /etc/lego/tz-bot-remover.sh
+            read -n 1 -p "Are you sure you want to proceed? (This will open another script and leave tz-bot) (y/n): " confirm_uninstall
+            if [[ "$confirm_uninstall" == "y" ]]; then
+                echo "Proceeding to uninstall..."
+                /etc/lego/tz-bot-remover.sh
+            else
+                echo "Uninstallation cancelled."
+                start_prompt
+            fi
             ;;
         4)
             echo "Exiting."

@@ -65,6 +65,7 @@ function renewal_management() {
     case $renewal_choice in
         1)
             if ! grep -q "sudo lego" "/etc/lego/scripts/renewal.sh"; then
+                echo ""
                 echo "No renewals found."
             else
                 echo ""
@@ -76,7 +77,9 @@ function renewal_management() {
             ;;
         2)
             if ! grep -q "sudo lego" "/etc/lego/scripts/renewal.sh"; then
+                echo ""
                 echo "No renewals found."
+                renewal_management
             else
                 read -p "Please enter the NUMBER of the renewal you want to remove: " remove_domain
                 if ! [[ "$remove_domain" =~ ^[0-9]+$ ]]; then

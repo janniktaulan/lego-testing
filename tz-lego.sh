@@ -20,6 +20,26 @@ function upkeep() {
             exit 1
         fi
     fi
+    cron="true"
+    if ! command -v crontab >/dev/null 2>&1; then
+        echo "---------WARNING---------"
+        echo "Crontab is NOT installed."
+        echo "Automatic renewal via cronjobs will not be available."
+        read -n 1 -p "Do you want TZ-bot to try installing cron/crontab? (y/n): " install_cron
+        if [[ "$install_cron" == "y" ]]; then
+            echo ""
+            echo "Installing cron..."
+            sudo apt-get update
+            sudo apt-get install cron -y
+                if ! command -v crontab >/dev/null 2>&1; then
+                echo "Crontab installation failed. Please install cron/crontab manually."
+                exit 1
+                fi
+        else
+            echo "Entering manual renewal mode."
+            cron="false"
+        fi
+    fi
     mkdir -p /etc/lego/scripts/
     mkdir -p /etc/lego/certs/
 
@@ -225,19 +245,20 @@ function new_cert() {
         domain_var="--domains "${domain:?}" --key-type rsa2048 run"
         domain_renew_var="--domains "${domain:?}" --key-type rsa2048 renew"
     fi
-
-    read -n 1 -p "Do you want to create a cronjob for automatic renewal? (y/n): " cronjob_choice
-    echo
-    if [[ "$cronjob_choice" == "y" ]]; then
-        renewal="yes"
-        echo "Selecting automatic renewal"
-        job='0 8 * * * /etc/lego/scripts/renewal.sh 2> /dev/null' 
-        (crontab -l 2>/dev/null | grep -Fxq -- "$job") || (crontab -l 2>/dev/null; printf '%s\n' "$job") | crontab - 
+    renewal="no"
+    if cron="true"; then
+        read -n 1 -p "Do you want to create a cronjob for automatic renewal? (y/n): " cronjob_choice
         echo
-    else 
-        echo "Selecting manual renewal"
-        renewal="no"
-        echo
+        if [[ "$cronjob_choice" == "y" ]]; then
+            renewal="yes"
+            echo "Selecting automatic renewal"
+            job='0 8 * * * /etc/lego/scripts/renewal.sh 2> /dev/null' 
+            (crontab -l 2>/dev/null | grep -Fxq -- "$job") || (crontab -l 2>/dev/null; printf '%s\n' "$job") | crontab - 
+            echo
+        else 
+            echo "Selecting manual renewal"
+            echo
+        fi
     fi
 
     read -n 1 -p "Do you want to specify where the certificate is saved? (y/n): " custom_path_choice

@@ -197,7 +197,7 @@ function new_cert() {
     echo "How do you want to validate?"
     echo "1: Pre-validated domain"
     echo "2: Azure DNS"
-    echo "3: HTTP Validation"
+    echo "3: HTTP Validation (Places files for validation in /var/www/html/)"
     read -n 1 -p "Enter choice [1-3]: " validation_choice
     echo
 

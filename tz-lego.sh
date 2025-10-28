@@ -97,7 +97,7 @@ function renewal_management() {
             echo "Are you sure you want to remove ALL cronjob renewals? This action cannot be undone."
             read -n 1 -p "Type 'y' to confirm, or 'n' to cancel: " confirm_all_removal
             echo
-            if [[ "$confirm_all_removal" != "y" ]]; then
+            if [[ "$confirm_all_removal" = "y" ]]; then
                 sudo rm /etc/lego/scripts/renewal.sh
                 echo "#!/bin/bash" > /etc/lego/scripts/renewal.sh
                 echo "All renewals have been removed."

@@ -295,7 +295,9 @@ function new_cert() {
                 sudo lego $registration $val_manual $path_var $eab $domain_var
                 echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
                 echo "sudo lego $registration $val_manual $path_var $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
-                echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
+                if [[ $server != "other" ]]; then
+                    echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
+                fi
                 if grep -q nginx "/etc/lego/scripts/renewal.sh"; then
                     sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/lego/scripts/renewal.sh
                     echo "sudo systemctl restart nginx" >> /etc/lego/scripts/renewal.sh
@@ -309,8 +311,8 @@ function new_cert() {
             if [[ $server != "other" ]]; then
                 echo "Attempting to restart web server: $server"
                 sudo systemctl restart $server
-                echo "Your certificate is here: $path"
             fi
+            echo "Your certificate is here: $path"
             exit
             ;;
         azure)
@@ -324,7 +326,9 @@ function new_cert() {
                 sudo -E lego $registration $val_azure $path_var $eab $domain_var
                 echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
                 echo "sudo -E lego $registration $val_azure $path_var $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
-                echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
+                if [[ $server != "other" ]]; then
+                    echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
+                fi
                 if grep -q nginx "/etc/lego/scripts/renewal.sh"; then
                     sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/lego/scripts/renewal.sh
                     echo "sudo systemctl restart nginx" >> /etc/lego/scripts/renewal.sh
@@ -341,8 +345,8 @@ function new_cert() {
             if [[ $server != "other" ]]; then
                 echo "Attempting to restart web server: $server"
                 sudo systemctl restart $server
-                echo "Your certificate is here: $path"
             fi
+            echo "Your certificate is here: $path"
             exit
             ;;
         http)
@@ -355,7 +359,9 @@ function new_cert() {
                 sudo lego $registration $val_http $path_var $eab $domain_var
                 echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
                 echo "sudo lego $registration $val_http $path_var $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
-                echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
+                if [[ $server != "other" ]]; then
+                    echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
+                fi
                 if grep -q nginx "/etc/lego/scripts/renewal.sh"; then
                     sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/lego/scripts/renewal.sh
                     echo "sudo systemctl restart nginx" >> /etc/lego/scripts/renewal.sh
@@ -368,8 +374,8 @@ function new_cert() {
             if [[ $server != "other" ]]; then
                 echo "Attempting to restart web server: $server"
                 sudo systemctl restart $server
-                echo "Your certificate is here: $path"
             fi
+            echo "Your certificate is here: $path"
             exit
             ;;
         *)

@@ -106,8 +106,8 @@ function dns_full() {
     read -p "Please enter your Azure Client Secret: " azure_client_secret
     read -p "Please enter your Azure Tenant ID: " azure_tenant_id
     read -p "Please enter your Azure Subscription ID: " azure_subscription_id
-    sudo rm /etc/lego/scripts/azure_credentials
-    echo "export AZURE_CLIENT_ID=\"$azure_client_id\"" >> /etc/lego/scripts/azure_credentials
+    #sudo rm /etc/lego/scripts/azure_credentials
+    echo "export AZURE_CLIENT_ID=\"$azure_client_id\"" > /etc/lego/scripts/azure_credentials
     echo "export AZURE_CLIENT_SECRET=\"$azure_client_secret\"" >> /etc/lego/scripts/azure_credentials
     echo "export AZURE_TENANT_ID=\"$azure_tenant_id\"" >> /etc/lego/scripts/azure_credentials
     echo "export AZURE_SUBSCRIPTION_ID=\"$azure_subscription_id\"" >> /etc/lego/scripts/azure_credentials

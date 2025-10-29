@@ -4,7 +4,9 @@ Run the following commands in your linux terminal:
 2. source tz-bot-installer
 
 Uninstallation:
-Currently working on a script to do this automatically, however it can be done manually:
+Can be done from TZ-bot main menu.
+
+Manual uninstall:
 Run the following commands to uninstall:
 sudo rm -rf /etc/lego/
 sudo rm -rf /usr/local/bin/lego

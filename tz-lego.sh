@@ -53,6 +53,7 @@ function upkeep() {
     if ! [ -e "/etc/lego/scripts/renewal.sh" ] ; then
         echo "#!/bin/bash" > /etc/lego/scripts/renewal.sh
         echo ". /etc/lego/scripts/azure_credentials" >> /etc/lego/scripts/renewal.sh
+        sudo chmod +x /etc/lego/scripts/renewal.sh
         chmod 600 /etc/lego/scripts/renewal.sh
     fi
 }

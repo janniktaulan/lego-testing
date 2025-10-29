@@ -7,7 +7,7 @@ if sudo mv /tmp/tz-bot /usr/local/bin/tz-bot; then
         sudo mv /tmp/tz-bot-remover.sh /etc/lego/tz-bot-remover.sh
         sudo chmod +x /etc/lego/tz-bot-remover.sh
     fi
-    echo "TZ-Bot has been installed successfully. You can run it using the command 'tz-bot' or "sudo tz-bot"."
+    echo "TZ-Bot has been installed successfully. You can run it using the command 'tz-bot' or 'sudo tz-bot'"
 else
     echo "Installation failed."
     exit 1

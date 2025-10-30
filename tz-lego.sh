@@ -73,7 +73,7 @@ function renewal_management() {
     echo "2. Remove a cronjob renewal"
     echo "3. Remove all cronjob renewals"
     echo "4. Back to main menu"
-    read -n 1 -p "Enter choice [1-3]: " renewal_choice
+    read -n 1 -p "Enter choice [1-4]: " renewal_choice
     echo
     case $renewal_choice in
         1)
@@ -191,7 +191,7 @@ function start_prompt() {
     echo "2. Renewal Management"
     echo "3. Uninstall TZ-Bot and Lego"
     echo "4. Exit"
-    read -n 1 -p "Enter choice [1-3]: " initial_choice
+    read -n 1 -p "Enter choice [1-4]: " initial_choice
     echo
     case $initial_choice in
         1)

@@ -16,7 +16,7 @@ function upkeep() {
                 exit 1
                 fi
         else
-            echo "Lego is required to use TZ-bot. Please install Lego manually, using this command: sudo snap install lego"
+            echo "Lego is required to use TZ-bot. If you need help installing lego, please contact TRUSTZONE support at support@trustzone.com"
             exit 1
         fi
     fi
@@ -40,21 +40,21 @@ function upkeep() {
             cron="false"
         fi
     fi
-    mkdir -p /etc/lego/scripts/
-    mkdir -p /etc/lego/certs/
+    mkdir -p /etc/tz-bot/scripts/
+    mkdir -p /etc/tz-bot/certs/
 
-    if ! [ -e "/etc/lego/scripts/storage" ] ; then
-        touch /etc/lego/scripts/storage
+    if ! [ -e "/etc/tz-bot/scripts/storage" ] ; then
+        touch /etc/tz-bot/scripts/storage
     fi
-        if ! [ -e "/etc/lego/scripts/azure_credentials" ] ; then
-        touch /etc/lego/scripts/azure_credentials
+        if ! [ -e "/etc/tz-bot/scripts/azure_credentials" ] ; then
+        touch /etc/tz-bot/scripts/azure_credentials
     fi
 
-    if ! [ -e "/etc/lego/scripts/renewal.sh" ] ; then
-        echo "#!/bin/bash" > /etc/lego/scripts/renewal.sh
-        echo ". /etc/lego/scripts/azure_credentials" >> /etc/lego/scripts/renewal.sh
-        sudo chmod +x /etc/lego/scripts/renewal.sh
-        chmod 600 /etc/lego/scripts/renewal.sh
+    if ! [ -e "/etc/tz-bot/scripts/renewal.sh" ] ; then
+        echo "#!/bin/bash" > /etc/tz-bot/scripts/renewal.sh
+        echo ". /etc/tz-bot/scripts/azure_credentials" >> /etc/tz-bot/scripts/renewal.sh
+        sudo chmod +x /etc/tz-bot/scripts/renewal.sh
+        chmod 600 /etc/tz-bot/scripts/renewal.sh
     fi
 }
 function renewal_management() {
@@ -68,19 +68,19 @@ function renewal_management() {
     echo
     case $renewal_choice in
         1)
-            if ! grep -q "sudo lego" "/etc/lego/scripts/renewal.sh"; then
+            if ! grep -q "sudo lego" "/etc/tz-bot/scripts/renewal.sh"; then
                 echo ""
                 echo "No renewals found."
             else
                 echo ""
                 echo "Current cronjob renewals:"
-                awk '{domain=""; wildcard=""; for(i=1;i<=NF;i++){if($i=="--domains"){d=$(i+1); if(d~/^\*\./){wildcard=d} else if(domain==""){domain=d}}} if(wildcard!=""){print NR ": " wildcard} else if(domain!=""){print NR ": " domain}}' /etc/lego/scripts/renewal.sh
+                awk '{domain=""; wildcard=""; for(i=1;i<=NF;i++){if($i=="--domains"){d=$(i+1); if(d~/^\*\./){wildcard=d} else if(domain==""){domain=d}}} if(wildcard!=""){print NR ": " wildcard} else if(domain!=""){print NR ": " domain}}' /etc/tz-bot/scripts/renewal.sh
                 echo
             fi
             renewal_management
             ;;
         2)
-            if ! grep -q "sudo lego" "/etc/lego/scripts/renewal.sh"; then
+            if ! grep -q "sudo lego" "/etc/tz-bot/scripts/renewal.sh"; then
                 echo ""
                 echo "No renewals found."
                 renewal_management
@@ -95,12 +95,12 @@ function renewal_management() {
                 echo
                 if [[ "$confirm_removal" == "y" ]]; then
                     echo "Removing renewal for domain: $remove_domain"
-                    if sudo sed -i.bak "${remove_domain}d" /etc/lego/scripts/renewal.sh; then
+                    if sudo sed -i.bak "${remove_domain}d" /etc/tz-bot/scripts/renewal.sh; then
                         echo "Renewal removed from renewal script."
-                        if sudo grep -q 'sudo lego' /etc/lego/scripts/renewal.sh; then
+                        if sudo grep -q 'sudo lego' /etc/tz-bot/scripts/renewal.sh; then
                             echo "Keeping crontab entry, since there are still renewals left in the script."
                         else
-                            sudo crontab -l | grep -v '/etc/lego/scripts/renewal.sh' | sudo crontab -
+                            sudo crontab -l | grep -v '/etc/tz-bot/scripts/renewal.sh' | sudo crontab -
                             echo "Crontab entry removed, since no renewals are left in the script."
                         fi
                     else
@@ -118,12 +118,12 @@ function renewal_management() {
             read -n 1 -p "Type 'y' to confirm, or 'n' to cancel: " confirm_all_removal
             echo
             if [[ "$confirm_all_removal" = "y" ]]; then
-                sudo rm /etc/lego/scripts/renewal.sh
-                echo "#!/bin/bash" > /etc/lego/scripts/renewal.sh
-                echo ". /etc/lego/scripts/azure_credentials" >> /etc/lego/scripts/renewal.sh
-                sudo chmod +x /etc/lego/scripts/renewal.sh
-                chmod 600 /etc/lego/scripts/renewal.sh
-                sudo crontab -l | grep -v '/etc/lego/scripts/renewal.sh' | sudo crontab -
+                sudo rm /etc/tz-bot/scripts/renewal.sh
+                echo "#!/bin/bash" > /etc/tz-bot/scripts/renewal.sh
+                echo ". /etc/tz-bot/scripts/azure_credentials" >> /etc/tz-bot/scripts/renewal.sh
+                sudo chmod +x /etc/tz-bot/scripts/renewal.sh
+                chmod 600 /etc/tz-bot/scripts/renewal.sh
+                sudo crontab -l | grep -v '/etc/tz-bot/scripts/renewal.sh' | sudo crontab -
                 echo "All renewals have been removed."
                 renewal_management
             else
@@ -226,7 +226,7 @@ function cronjob() {
         if [[ "$cronjob_choice" == "y" ]]; then
             renewal="yes"
             echo "Selecting automatic renewal"
-            job='0 8 * * * /etc/lego/scripts/renewal.sh 2> /dev/null' 
+            job='0 8 * * * /etc/tz-bot/scripts/renewal.sh 2> /dev/null' 
             (crontab -l 2>/dev/null | grep -Fxq -- "$job") || (crontab -l 2>/dev/null; printf '%s\n' "$job") | crontab - 
             echo
         else 
@@ -302,8 +302,8 @@ function new_cert() {
 
     #reg var
     # Always source user credentials before using eab_kid and eab_hmac
-    if [ -f /etc/lego/scripts/user_credentials ]; then
-        . /etc/lego/scripts/user_credentials
+    if [ -f /etc/tz-bot/scripts/user_credentials ]; then
+        . /etc/tz-bot/scripts/user_credentials
     fi
     registration="--server https://emea.acme.atlas.globalsign.com/directory --email test123@test.com -a"
 
@@ -329,16 +329,16 @@ function new_cert() {
     read -n 1 -p "Do you want to specify where the certificate is saved? (y/n): " custom_path_choice
     echo
     if [[ "$custom_path_choice" == "y" ]]; then
-        read -p "Please enter the full path to save the certificates (e.g., /etc/lego/certs): " custom_path
+        read -p "Please enter the full path to save the certificates (e.g., /etc/tz-bot/certs): " custom_path
         echo ""
         echo "Custom path selected: $custom_path"
-        echo "path=$custom_path" > /etc/lego/scripts/storage
-        . /etc/lego/scripts/storage
+        echo "path=$custom_path" > /etc/tz-bot/scripts/storage
+        . /etc/tz-bot/scripts/storage
         path_var="--path $path"
         else
-        echo "Using default path for certificate storage: /etc/lego/certs/"
-        echo "path=/etc/lego/certs" > /etc/lego/scripts/storage
-        . /etc/lego/scripts/storage
+        echo "Using default path for certificate storage: /etc/tz-bot/certs/"
+        echo "path=/etc/tz-bot/certs" > /etc/tz-bot/scripts/storage
+        . /etc/tz-bot/scripts/storage
         path_var="--path $path"
 
     fi
@@ -354,18 +354,18 @@ function new_cert() {
                 exit
             fi
             if [[ $renewal = yes ]]; then
-                echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
-                echo "sudo lego $registration $val_manual $path_var $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
+                echo "Creating cronjob for automatic renewal at: /etc/tz-bot/scripts/renewal.sh"
+                echo "sudo lego $registration $val_manual $path_var $eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal.sh
                 if [[ $server != "other" ]]; then
-                    echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
+                    echo "sudo systemctl restart $server" >> /etc/tz-bot/scripts/renewal.sh
                 fi
-                if grep -q nginx "/etc/lego/scripts/renewal.sh"; then
-                    sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/lego/scripts/renewal.sh
-                    echo "sudo systemctl restart nginx" >> /etc/lego/scripts/renewal.sh
+                if grep -q nginx "/etc/tz-bot/scripts/renewal.sh"; then
+                    sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/tz-bot/scripts/renewal.sh
+                    echo "sudo systemctl restart nginx" >> /etc/tz-bot/scripts/renewal.sh
                 fi
-                if grep -q apache2 "/etc/lego/scripts/renewal.sh"; then
-                    sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/lego/scripts/renewal.sh
-                    echo "sudo systemctl restart apache2" >> /etc/lego/scripts/renewal.sh
+                if grep -q apache2 "/etc/tz-bot/scripts/renewal.sh"; then
+                    sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/tz-bot/scripts/renewal.sh
+                    echo "sudo systemctl restart apache2" >> /etc/tz-bot/scripts/renewal.sh
                 fi
             fi
             if [[ $server != "other" ]]; then
@@ -376,7 +376,7 @@ function new_cert() {
             start_prompt
             ;;
         azure)
-            . /etc/lego/scripts/azure_credentials
+            . /etc/tz-bot/scripts/azure_credentials
             echo "LEGO command: sudo -E lego $registration $val_azure $path_var $eab $domain_var"
             if sudo -E lego $registration $val_azure $path_var $eab $domain_var; then
                 cronjob
@@ -386,18 +386,18 @@ function new_cert() {
                 exit
             fi
             if [[ $renewal = yes ]]; then
-                echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
-                echo "sudo -E lego $registration $val_azure $path_var $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
+                echo "Creating cronjob for automatic renewal at: /etc/tz-bot/scripts/renewal.sh"
+                echo "sudo -E lego $registration $val_azure $path_var $eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal.sh
                 if [[ $server != "other" ]]; then
-                    echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
+                    echo "sudo systemctl restart $server" >> /etc/tz-bot/scripts/renewal.sh
                 fi
-                if grep -q nginx "/etc/lego/scripts/renewal.sh"; then
-                    sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/lego/scripts/renewal.sh
-                    echo "sudo systemctl restart nginx" >> /etc/lego/scripts/renewal.sh
+                if grep -q nginx "/etc/tz-bot/scripts/renewal.sh"; then
+                    sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/tz-bot/scripts/renewal.sh
+                    echo "sudo systemctl restart nginx" >> /etc/tz-bot/scripts/renewal.sh
                 fi
-                if grep -q apache2 "/etc/lego/scripts/renewal.sh"; then
-                    sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/lego/scripts/renewal.sh
-                    echo "sudo systemctl restart apache2" >> /etc/lego/scripts/renewal.sh
+                if grep -q apache2 "/etc/tz-bot/scripts/renewal.sh"; then
+                    sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/tz-bot/scripts/renewal.sh
+                    echo "sudo systemctl restart apache2" >> /etc/tz-bot/scripts/renewal.sh
                 fi
             fi
             if [[ $server != "other" ]]; then
@@ -417,18 +417,18 @@ function new_cert() {
                 exit
             fi
             if [[ $renewal = yes ]]; then
-                echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
-                echo "sudo lego $registration $val_http $path_var $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
+                echo "Creating cronjob for automatic renewal at: /etc/tz-bot/scripts/renewal.sh"
+                echo "sudo lego $registration $val_http $path_var $eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal.sh
                 if [[ $server != "other" ]]; then
-                    echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
+                    echo "sudo systemctl restart $server" >> /etc/tz-bot/scripts/renewal.sh
                 fi
-                if grep -q nginx "/etc/lego/scripts/renewal.sh"; then
-                    sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/lego/scripts/renewal.sh
-                    echo "sudo systemctl restart nginx" >> /etc/lego/scripts/renewal.sh
+                if grep -q nginx "/etc/tz-bot/scripts/renewal.sh"; then
+                    sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/tz-bot/scripts/renewal.sh
+                    echo "sudo systemctl restart nginx" >> /etc/tz-bot/scripts/renewal.sh
                 fi
-                if grep -q apache2 "/etc/lego/scripts/renewal.sh"; then
-                    sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/lego/scripts/renewal.sh
-                    echo "sudo systemctl restart apache2" >> /etc/lego/scripts/renewal.sh
+                if grep -q apache2 "/etc/tz-bot/scripts/renewal.sh"; then
+                    sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/tz-bot/scripts/renewal.sh
+                    echo "sudo systemctl restart apache2" >> /etc/tz-bot/scripts/renewal.sh
                 fi
             fi
             if [[ $server != "other" ]]; then

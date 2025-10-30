@@ -343,22 +343,20 @@ function new_cert() {
 
     case $validation in
         manual)
-            if [[ $renewal = no ]]; then
-                echo "LEGO command: sudo lego $registration $val_manual $path_var $eab $domain_var" 
-                if sudo lego $registration $val_manual $path_var $eab $domain_var; then
-                    echo "The test was a success"
-                else
-                    echo "There was an error during certificate issuance."
-                    exit
-                fi
+            echo "LEGO command: sudo lego $registration $val_manual $path_var $eab $domain_var"
+            if sudo lego $registration $val_manual $path_var $eab $domain_var; then
+                cronjob
+            else
+                echo "There was a problem with the certificate request. Please check your credentials and domain validation."
+                echo "You can also contact TRUSTZONE support at support@trustzone.com"
+                exit
             fi
             if [[ $renewal = yes ]]; then
-                echo "LEGO command: sudo lego $registration $val_manual $path_var $eab $domain_var"
-                sudo lego $registration $val_manual $path_var $eab $domain_var
                 echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
-                echo "sudo lego $registration $val_manual $path_var $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
+                echo "sudo lego $registration $val_manual $path_var $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh                    if [[ $server != "other" ]]; then
                 if [[ $server != "other" ]]; then
                     echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
+                fi
                 fi
                 if grep -q nginx "/etc/lego/scripts/renewal.sh"; then
                     sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/lego/scripts/renewal.sh
@@ -368,7 +366,6 @@ function new_cert() {
                     sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/lego/scripts/renewal.sh
                     echo "sudo systemctl restart apache2" >> /etc/lego/scripts/renewal.sh
                 fi
-                cronjob
             fi
             if [[ $server != "other" ]]; then
                 echo "Attempting to restart web server: $server"
@@ -379,13 +376,15 @@ function new_cert() {
             ;;
         azure)
             . /etc/lego/scripts/azure_credentials
-            if [[ $renewal = no ]]; then
-                echo "LEGO command: sudo -E lego $registration $val_azure $path_var $eab $domain_var"
-                sudo -E lego $registration $val_azure $path_var $eab $domain_var
+            echo "LEGO command: sudo -E lego $registration $val_azure $path_var $eab $domain_var"
+            if sudo -E lego $registration $val_azure $path_var $eab $domain_var; then
+                cronjob
+            else
+                echo "There was a problem with the certificate request. Please check your credentials and domain validation."
+                echo "You can also contact TRUSTZONE support at support@trustzone.com"
+                exit
             fi
             if [[ $renewal = yes ]]; then
-                echo "LEGO command: sudo -E lego $registration $val_azure $path_var $eab $domain_var"
-                sudo -E lego $registration $val_azure $path_var $eab $domain_var
                 echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
                 echo "sudo -E lego $registration $val_azure $path_var $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
                 if [[ $server != "other" ]]; then
@@ -403,7 +402,6 @@ function new_cert() {
                     sudo sed -i.bak "/. \/etc\/lego\/scripts\/azure_credentials/d" /etc/lego/scripts/renewal.sh
                     echo ". /etc/lego/scripts/azure_credentials" >> /etc/lego/scripts/renewal.sh
                 fi
-                cronjob
             fi
             if [[ $server != "other" ]]; then
                 echo "Attempting to restart web server: $server"
@@ -413,13 +411,15 @@ function new_cert() {
             start_prompt
             ;;
         http)
-            if [[ $renewal = no ]]; then
-                echo "LEGO command: sudo lego $registration $val_http $path_var $eab $domain_var" 
-                sudo lego $registration $val_http $path_var $eab $domain_var
+            echo "LEGO command: sudo lego $registration $val_http $path_var $eab $domain_var"
+            if sudo lego $registration $val_http $path_var $eab $domain_var; then
+                cronjob
+            else
+                echo "There was a problem with the certificate request. Please check your credentials and domain validation."
+                echo "You can also contact TRUSTZONE support at support@trustzone.com"
+                exit
             fi
             if [[ $renewal = yes ]]; then
-                echo "LEGO command: sudo lego $registration $val_http $path_var $eab $domain_var"
-                sudo lego $registration $val_http $path_var $eab $domain_var
                 echo "Creating cronjob for automatic renewal at: /etc/lego/scripts/renewal.sh"
                 echo "sudo lego $registration $val_http $path_var $eab $domain_renew_var" >> /etc/lego/scripts/renewal.sh
                 if [[ $server != "other" ]]; then
@@ -433,7 +433,6 @@ function new_cert() {
                     sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/lego/scripts/renewal.sh
                     echo "sudo systemctl restart apache2" >> /etc/lego/scripts/renewal.sh
                 fi
-                cronjob
             fi
             if [[ $server != "other" ]]; then
                 echo "Attempting to restart web server: $server"

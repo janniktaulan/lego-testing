@@ -357,7 +357,6 @@ function new_cert() {
                 if [[ $server != "other" ]]; then
                     echo "sudo systemctl restart $server" >> /etc/lego/scripts/renewal.sh
                 fi
-                fi
                 if grep -q nginx "/etc/lego/scripts/renewal.sh"; then
                     sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/lego/scripts/renewal.sh
                     echo "sudo systemctl restart nginx" >> /etc/lego/scripts/renewal.sh

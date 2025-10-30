@@ -55,8 +55,8 @@ function upkeep() {
         chmod 600 /etc/tz-bot/scripts/renewal_list
     fi
     if ! [ -e "/etc/tz-bot/scripts/renewal.sh" ] ; then
-        sudo echo "sudo echo "#!/bin/bash" > renew_temp.sh" > /etc/tz-bot/scripts/renewal.sh
-        sudo echo "sudo echo ". /etc/tz-bot/scripts/azure_credentials" >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
+        sudo echo "sudo echo '#!/bin/bash" > renew_temp.sh' > /etc/tz-bot/scripts/renewal.sh
+        sudo echo "sudo echo '. /etc/tz-bot/scripts/azure_credentials' >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
         sudo echo "sudo cat renewal_list.sh >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
         sudo echo "chmod +x renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
         sudo chmod +x /etc/tz-bot/scripts/renewal.sh
@@ -64,6 +64,7 @@ function upkeep() {
         sudo echo "rm -rf renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
         sudo chmod +x /etc/tz-bot/scripts/renewal.sh
         chmod 600 /etc/tz-bot/scripts/renewal.sh
+        sudo chmod +x /etc/tz-bot/scripts/renewal.sh
     fi
 }
 function renewal_management() {
@@ -376,7 +377,11 @@ function new_cert() {
             fi
             if [[ $server != "other" ]]; then
                 echo "Attempting to restart web server: $server"
-                sudo systemctl restart $server
+                if sudo systemctl restart $server; then
+                    echo "$server restarted successfully."
+                else
+                    echo "Failed to restart $server. Please check the server status manually."
+                fi
             fi
             echo "Your certificate is here: $path"
             start_prompt
@@ -408,7 +413,11 @@ function new_cert() {
             fi
             if [[ $server != "other" ]]; then
                 echo "Attempting to restart web server: $server"
-                sudo systemctl restart $server
+                if sudo systemctl restart $server; then
+                    echo "$server restarted successfully."
+                else
+                    echo "Failed to restart $server. Please check the server status manually."
+                fi
             fi
             echo "Your certificate is here: $path"
             start_prompt
@@ -439,7 +448,11 @@ function new_cert() {
             fi
             if [[ $server != "other" ]]; then
                 echo "Attempting to restart web server: $server"
-                sudo systemctl restart $server
+                if sudo systemctl restart $server; then
+                    echo "$server restarted successfully."
+                else
+                    echo "Failed to restart $server. Please check the server status manually."
+                fi
             fi
             echo "Your certificate is here: $path"
             start_prompt

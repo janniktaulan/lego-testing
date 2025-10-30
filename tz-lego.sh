@@ -121,6 +121,8 @@ function renewal_management() {
                 sudo rm /etc/lego/scripts/renewal.sh
                 echo "#!/bin/bash" > /etc/lego/scripts/renewal.sh
                 echo ". /etc/lego/scripts/azure_credentials" >> /etc/lego/scripts/renewal.sh
+                sudo chmod +x /etc/lego/scripts/renewal.sh
+                chmod 600 /etc/lego/scripts/renewal.sh
                 sudo crontab -l | grep -v '/etc/lego/scripts/renewal.sh' | sudo crontab -
                 echo "All renewals have been removed."
                 renewal_management

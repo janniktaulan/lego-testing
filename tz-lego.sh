@@ -57,10 +57,11 @@ function upkeep() {
     if ! [ -e "/etc/tz-bot/scripts/renewal.sh" ] ; then
         sudo echo "sudo echo "#!/bin/bash" > renew_temp.sh" > /etc/tz-bot/scripts/renewal.sh
         sudo echo "sudo echo ". /etc/lego/scripts/azure_credentials" >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
-        sudo cat renewal_list.sh >> renew_temp.sh
-        sudo chmod +x renew_temp.sh
-        sudo bash renew_temp.sh
-        sudo rm -rf renew_temp.sh
+        sudo echo "sudo cat renewal_list.sh >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
+        sudo echo "chmod +x renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
+        sudo chmod +x /etc/tz-bot/scripts/renewal.sh
+        sudo echo "bash renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
+        sudo echo "rm -rf renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
         sudo chmod +x /etc/tz-bot/scripts/renewal.sh
         chmod 600 /etc/tz-bot/scripts/renewal.sh
     fi

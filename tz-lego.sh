@@ -397,10 +397,6 @@ function new_cert() {
                     sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/lego/scripts/renewal.sh
                     echo "sudo systemctl restart apache2" >> /etc/lego/scripts/renewal.sh
                 fi
-                if grep -q ". /etc/lego/scripts/azure_credentials" "/etc/lego/scripts/renewal.sh"; then
-                    sudo sed -i.bak "/. \/etc\/lego\/scripts\/azure_credentials/d" /etc/lego/scripts/renewal.sh
-                    echo ". /etc/lego/scripts/azure_credentials" >> /etc/lego/scripts/renewal.sh
-                fi
             fi
             if [[ $server != "other" ]]; then
                 echo "Attempting to restart web server: $server"

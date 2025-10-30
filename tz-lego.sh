@@ -55,7 +55,7 @@ function upkeep() {
         chmod 600 /etc/tz-bot/scripts/renewal_list
     fi
     if ! [ -e "/etc/tz-bot/scripts/renewal.sh" ] ; then
-        sudo echo "sudo echo '#!/bin/bash" > renew_temp.sh' > /etc/tz-bot/scripts/renewal.sh
+        sudo echo "sudo echo '#!/bin/bash' > renew_temp.sh" > /etc/tz-bot/scripts/renewal.sh
         sudo echo "sudo echo '. /etc/tz-bot/scripts/azure_credentials' >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
         sudo echo "sudo cat renewal_list.sh >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
         sudo echo "chmod +x renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh

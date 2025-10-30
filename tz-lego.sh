@@ -50,9 +50,16 @@ function upkeep() {
         touch /etc/tz-bot/scripts/azure_credentials
     fi
 
+    if ! [ -e "/etc/tz-bot/scripts/renewal_list" ] ; then
+        chmod 600 /etc/tz-bot/scripts/renewal_list
+    fi
     if ! [ -e "/etc/tz-bot/scripts/renewal.sh" ] ; then
-        echo "#!/bin/bash" > /etc/tz-bot/scripts/renewal.sh
-        echo ". /etc/tz-bot/scripts/azure_credentials" >> /etc/tz-bot/scripts/renewal.sh
+        sudo echo "sudo echo "#!/bin/bash" > renew_temp.sh"
+        sudo echo "sudo echo ". /etc/lego/scripts/azure_credentials" >> renew_temp.sh"
+        sudo cat renewal_list.sh >> renew_temp.sh
+        sudo chmod +x renew_temp.sh
+        sudo bash renew_temp.sh
+        sudo rm -rf renew_temp.sh
         sudo chmod +x /etc/tz-bot/scripts/renewal.sh
         chmod 600 /etc/tz-bot/scripts/renewal.sh
     fi
@@ -68,19 +75,19 @@ function renewal_management() {
     echo
     case $renewal_choice in
         1)
-            if ! grep -q "sudo lego" "/etc/tz-bot/scripts/renewal.sh"; then
+            if ! grep -q "sudo lego" "/etc/tz-bot/scripts/renewal_list"; then
                 echo ""
                 echo "No renewals found."
             else
                 echo ""
                 echo "Current cronjob renewals:"
-                awk '{domain=""; wildcard=""; for(i=1;i<=NF;i++){if($i=="--domains"){d=$(i+1); if(d~/^\*\./){wildcard=d} else if(domain==""){domain=d}}} if(wildcard!=""){print NR ": " wildcard} else if(domain!=""){print NR ": " domain}}' /etc/tz-bot/scripts/renewal.sh
+                awk '{domain=""; wildcard=""; for(i=1;i<=NF;i++){if($i=="--domains"){d=$(i+1); if(d~/^\*\./){wildcard=d} else if(domain==""){domain=d}}} if(wildcard!=""){print NR ": " wildcard} else if(domain!=""){print NR ": " domain}}' /etc/tz-bot/scripts/renewal_list
                 echo
             fi
             renewal_management
             ;;
         2)
-            if ! grep -q "sudo lego" "/etc/tz-bot/scripts/renewal.sh"; then
+            if ! grep -q "sudo lego" "/etc/tz-bot/scripts/renewal_list"; then
                 echo ""
                 echo "No renewals found."
                 renewal_management
@@ -95,12 +102,12 @@ function renewal_management() {
                 echo
                 if [[ "$confirm_removal" == "y" ]]; then
                     echo "Removing renewal for domain: $remove_domain"
-                    if sudo sed -i.bak "${remove_domain}d" /etc/tz-bot/scripts/renewal.sh; then
+                    if sudo sed -i.bak "${remove_domain}d" /etc/tz-bot/scripts/renewal_list; then
                         echo "Renewal removed from renewal script."
-                        if sudo grep -q 'sudo lego' /etc/tz-bot/scripts/renewal.sh; then
+                        if sudo grep -q 'sudo lego' /etc/tz-bot/scripts/renewal_list; then
                             echo "Keeping crontab entry, since there are still renewals left in the script."
                         else
-                            sudo crontab -l | grep -v '/etc/tz-bot/scripts/renewal.sh' | sudo crontab -
+                            sudo crontab -l | grep -v '/etc/tz-bot/scripts/renewal_list' | sudo crontab -
                             echo "Crontab entry removed, since no renewals are left in the script."
                         fi
                     else
@@ -118,11 +125,9 @@ function renewal_management() {
             read -n 1 -p "Type 'y' to confirm, or 'n' to cancel: " confirm_all_removal
             echo
             if [[ "$confirm_all_removal" = "y" ]]; then
-                sudo rm /etc/tz-bot/scripts/renewal.sh
-                echo "#!/bin/bash" > /etc/tz-bot/scripts/renewal.sh
-                echo ". /etc/tz-bot/scripts/azure_credentials" >> /etc/tz-bot/scripts/renewal.sh
-                sudo chmod +x /etc/tz-bot/scripts/renewal.sh
-                chmod 600 /etc/tz-bot/scripts/renewal.sh
+                sudo rm /etc/tz-bot/scripts/renewal_list
+                sudo touch /etc/tz-bot/scripts/renewal_list
+                chmod 600 /etc/tz-bot/scripts/renewal_list
                 sudo crontab -l | grep -v '/etc/tz-bot/scripts/renewal.sh' | sudo crontab -
                 echo "All renewals have been removed."
                 renewal_management
@@ -226,7 +231,7 @@ function cronjob() {
         if [[ "$cronjob_choice" == "y" ]]; then
             renewal="yes"
             echo "Selecting automatic renewal"
-            job='0 8 * * * /etc/tz-bot/scripts/renewal.sh 2> /dev/null' 
+            job='0 0 1 * * /etc/tz-bot/scripts/renewal.sh 2> /dev/null' 
             (crontab -l 2>/dev/null | grep -Fxq -- "$job") || (crontab -l 2>/dev/null; printf '%s\n' "$job") | crontab - 
             echo
         else 
@@ -354,18 +359,18 @@ function new_cert() {
                 exit
             fi
             if [[ $renewal = yes ]]; then
-                echo "Creating cronjob for automatic renewal at: /etc/tz-bot/scripts/renewal.sh"
-                echo "sudo lego $registration $val_manual $path_var $eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal.sh
+                echo "Updating renewal list at: /etc/tz-bot/scripts/renewal_list"
+                echo "sudo lego $registration $val_manual $path_var $eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
                 if [[ $server != "other" ]]; then
-                    echo "sudo systemctl restart $server" >> /etc/tz-bot/scripts/renewal.sh
+                    echo "sudo systemctl restart $server" >> /etc/tz-bot/scripts/renewal_list
                 fi
-                if grep -q nginx "/etc/tz-bot/scripts/renewal.sh"; then
-                    sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/tz-bot/scripts/renewal.sh
-                    echo "sudo systemctl restart nginx" >> /etc/tz-bot/scripts/renewal.sh
+                if grep -q nginx "/etc/tz-bot/scripts/renewal_list"; then
+                    sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/tz-bot/scripts/renewal_list
+                    echo "sudo systemctl restart nginx" >> /etc/tz-bot/scripts/renewal_list
                 fi
-                if grep -q apache2 "/etc/tz-bot/scripts/renewal.sh"; then
-                    sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/tz-bot/scripts/renewal.sh
-                    echo "sudo systemctl restart apache2" >> /etc/tz-bot/scripts/renewal.sh
+                if grep -q apache2 "/etc/tz-bot/scripts/renewal_list"; then
+                    sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/tz-bot/scripts/renewal_list
+                    echo "sudo systemctl restart apache2" >> /etc/tz-bot/scripts/renewal_list
                 fi
             fi
             if [[ $server != "other" ]]; then
@@ -386,18 +391,18 @@ function new_cert() {
                 exit
             fi
             if [[ $renewal = yes ]]; then
-                echo "Creating cronjob for automatic renewal at: /etc/tz-bot/scripts/renewal.sh"
-                echo "sudo -E lego $registration $val_azure $path_var $eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal.sh
+                echo "Updating renewal list at: /etc/tz-bot/scripts/renewal_list"
+                echo "sudo -E lego $registration $val_azure $path_var $eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
                 if [[ $server != "other" ]]; then
-                    echo "sudo systemctl restart $server" >> /etc/tz-bot/scripts/renewal.sh
+                    echo "sudo systemctl restart $server" >> /etc/tz-bot/scripts/renewal_list
                 fi
-                if grep -q nginx "/etc/tz-bot/scripts/renewal.sh"; then
-                    sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/tz-bot/scripts/renewal.sh
-                    echo "sudo systemctl restart nginx" >> /etc/tz-bot/scripts/renewal.sh
+                if grep -q nginx "/etc/tz-bot/scripts/renewal_list"; then
+                    sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/tz-bot/scripts/renewal_list
+                    echo "sudo systemctl restart nginx" >> /etc/tz-bot/scripts/renewal_list
                 fi
-                if grep -q apache2 "/etc/tz-bot/scripts/renewal.sh"; then
-                    sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/tz-bot/scripts/renewal.sh
-                    echo "sudo systemctl restart apache2" >> /etc/tz-bot/scripts/renewal.sh
+                if grep -q apache2 "/etc/tz-bot/scripts/renewal_list"; then
+                    sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/tz-bot/scripts/renewal_list
+                    echo "sudo systemctl restart apache2" >> /etc/tz-bot/scripts/renewal_list
                 fi
             fi
             if [[ $server != "other" ]]; then
@@ -417,18 +422,18 @@ function new_cert() {
                 exit
             fi
             if [[ $renewal = yes ]]; then
-                echo "Creating cronjob for automatic renewal at: /etc/tz-bot/scripts/renewal.sh"
-                echo "sudo lego $registration $val_http $path_var $eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal.sh
+                echo "Updating renewal list at: /etc/tz-bot/scripts/renewal_list"
+                echo "sudo lego $registration $val_http $path_var $eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
                 if [[ $server != "other" ]]; then
-                    echo "sudo systemctl restart $server" >> /etc/tz-bot/scripts/renewal.sh
+                    echo "sudo systemctl restart $server" >> /etc/tz-bot/scripts/renewal_list
                 fi
-                if grep -q nginx "/etc/tz-bot/scripts/renewal.sh"; then
-                    sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/tz-bot/scripts/renewal.sh
-                    echo "sudo systemctl restart nginx" >> /etc/tz-bot/scripts/renewal.sh
+                if grep -q nginx "/etc/tz-bot/scripts/renewal_list"; then
+                    sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/tz-bot/scripts/renewal_list
+                    echo "sudo systemctl restart nginx" >> /etc/tz-bot/scripts/renewal_list
                 fi
-                if grep -q apache2 "/etc/tz-bot/scripts/renewal.sh"; then
-                    sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/tz-bot/scripts/renewal.sh
-                    echo "sudo systemctl restart apache2" >> /etc/tz-bot/scripts/renewal.sh
+                if grep -q apache2 "/etc/tz-bot/scripts/renewal_list"; then
+                    sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/tz-bot/scripts/renewal_list
+                    echo "sudo systemctl restart apache2" >> /etc/tz-bot/scripts/renewal_list
                 fi
             fi
             if [[ $server != "other" ]]; then
@@ -449,16 +454,3 @@ function new_cert() {
 echo "Welcome to TZ-Bot."
 upkeep
 start_prompt
-
-# To do list:
-# check if first letter of $domain is a "*". If it is, we need to add a second --domains, so that we get both "*.example.com" and "example.com".
-# ${full_domain#*.}
-
-# Notes:
-
-# Only works with 1 set of credentials, both for EAB and DNS.
-# Renewal management is implemented, however it works kind of quirky.
-# HTTP is not supported when installed using snap - snap gives no rights to anywhere other than the snap folder.
-# Can only place certificates in the snap folder, meaning that the --path option cannot be used. However we have a function in place that simply copies the entire folder, to another place.
-# Should we have an option to only copy the specific cert? Also no old certs are kept, lego overwrites existing certs when ordering new ones.
-# Wilcard seems to be working just fine. I have not tested a deployment of one, only issuing it.

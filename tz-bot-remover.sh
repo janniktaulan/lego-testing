@@ -9,6 +9,7 @@ if [[ "$confirm_uninstall" == "y" ]]; then
     sudo rm -rf /etc/lego/
     sudo rm -rf /usr/local/bin/lego
     sudo rm -rf /usr/local/bin/tz-bot
+    sudo crontab -l | grep -v '/etc/lego/scripts/renewal.sh' | sudo crontab -
     if command -v lego >/dev/null 2>&1; then
         echo "Uninstallation failed. Please remove manually."
         exit

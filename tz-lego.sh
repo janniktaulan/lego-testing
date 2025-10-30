@@ -56,7 +56,7 @@ function upkeep() {
     fi
     if ! [ -e "/etc/tz-bot/scripts/renewal.sh" ] ; then
         sudo echo "sudo echo "#!/bin/bash" > renew_temp.sh" > /etc/tz-bot/scripts/renewal.sh
-        sudo echo "sudo echo ". /etc/lego/scripts/azure_credentials" >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
+        sudo echo "sudo echo ". /etc/tz-bot/scripts/azure_credentials" >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
         sudo echo "sudo cat renewal_list.sh >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
         sudo echo "chmod +x renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
         sudo chmod +x /etc/tz-bot/scripts/renewal.sh
@@ -148,7 +148,7 @@ function renewal_management() {
     esac
 }
 function read_credentials() {
-    if test -f /etc/lego/scripts/user_credentials; then
+    if test -f /etc/tz-bot/scripts/user_credentials; then
     read -n 1 -p "Do you want to reuse saved EAB credentials? (y/n): " reuse_eab
     echo
         if [[ "$reuse_eab" == "y" ]]; then
@@ -160,12 +160,12 @@ function read_credentials() {
     read -p "Please enter your EAB Key ID: " eab_kid
     read -p "Please enter your EAB HMAC Key: " eab_hmac
     read -p "Please enter your domain: " domain
-    echo "export eab_kid=\"$eab_kid\"" > /etc/lego/scripts/user_credentials
-    echo "export eab_hmac=\"$eab_hmac\"" >> /etc/lego/scripts/user_credentials
-    chmod 600 /etc/lego/scripts/user_credentials
+    echo "export eab_kid=\"$eab_kid\"" > /etc/tz-bot/scripts/user_credentials
+    echo "export eab_hmac=\"$eab_hmac\"" >> /etc/tz-bot/scripts/user_credentials
+    chmod 600 /etc/tz-bot/scripts/user_credentials
 }
 function dns_full() {
-    if grep -q "export AZURE" "/etc/lego/scripts/azure_credentials"; then
+    if grep -q "export AZURE" "/etc/tz-bot/scripts/azure_credentials"; then
     read -n 1 -p "Do you want to reuse saved Azure credentials? (y/n): " reuse_azure
     echo
         if [[ "$reuse_azure" == "y" ]]; then
@@ -176,13 +176,12 @@ function dns_full() {
     read -p "Please enter your Azure Client Secret: " azure_client_secret
     read -p "Please enter your Azure Tenant ID: " azure_tenant_id
     read -p "Please enter your Azure Subscription ID: " azure_subscription_id
-    #sudo rm /etc/lego/scripts/azure_credentials
-    echo "export AZURE_CLIENT_ID=\"$azure_client_id\"" > /etc/lego/scripts/azure_credentials
-    echo "export AZURE_CLIENT_SECRET=\"$azure_client_secret\"" >> /etc/lego/scripts/azure_credentials
-    echo "export AZURE_TENANT_ID=\"$azure_tenant_id\"" >> /etc/lego/scripts/azure_credentials
-    echo "export AZURE_SUBSCRIPTION_ID=\"$azure_subscription_id\"" >> /etc/lego/scripts/azure_credentials
-    echo "export AZURE_ENVIRONMENT=\"public\"" >> /etc/lego/scripts/azure_credentials
-    chmod 600 /etc/lego/scripts/azure_credentials
+    echo "export AZURE_CLIENT_ID=\"$azure_client_id\"" > /etc/tz-bot/scripts/azure_credentials
+    echo "export AZURE_CLIENT_SECRET=\"$azure_client_secret\"" >> /etc/tz-bot/scripts/azure_credentials
+    echo "export AZURE_TENANT_ID=\"$azure_tenant_id\"" >> /etc/tz-bot/scripts/azure_credentials
+    echo "export AZURE_SUBSCRIPTION_ID=\"$azure_subscription_id\"" >> /etc/tz-bot/scripts/azure_credentials
+    echo "export AZURE_ENVIRONMENT=\"public\"" >> /etc/tz-bot/scripts/azure_credentials
+    chmod 600 /etc/tz-bot/scripts/azure_credentials
 }
 function start_prompt() {
     echo
@@ -210,7 +209,7 @@ function start_prompt() {
             if [[ "$confirm_uninstall" == "y" ]]; then
                 echo "Proceeding to uninstall..."
                 echo ""
-                /etc/lego/tz-bot-remover.sh
+                /etc/tz-bot/tz-bot-remover.sh
             else
                 echo "Uninstallation cancelled."
                 start_prompt

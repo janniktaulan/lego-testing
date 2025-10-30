@@ -97,6 +97,12 @@ function renewal_management() {
                     echo "Removing renewal for domain: $remove_domain"
                     if sudo sed -i.bak "${remove_domain}d" /etc/lego/scripts/renewal.sh; then
                         echo "Renewal removed from renewal script."
+                        if sudo grep -q 'sudo lego' /etc/lego/scripts/renewal.sh; then
+                            echo "Keeping crontab entry, since there are still renewals left in the script."
+                        else
+                            sudo crontab -l | grep -v '/etc/lego/scripts/renewal.sh' | sudo crontab -
+                            echo "Crontab entry removed, since no renewals are left in the script."
+                        fi
                     else
                         echo "Failed to remove renewal from script."
                 fi
@@ -191,8 +197,10 @@ function start_prompt() {
         3)
             echo "You selected to uninstall TZ-Bot and Lego."
             read -n 1 -p "Are you sure you want to proceed? (This will open another script and leave tz-bot) (y/n): " confirm_uninstall
+            echo ""
             if [[ "$confirm_uninstall" == "y" ]]; then
                 echo "Proceeding to uninstall..."
+                echo ""
                 /etc/lego/tz-bot-remover.sh
             else
                 echo "Uninstallation cancelled."
@@ -208,6 +216,22 @@ function start_prompt() {
             exit 1
             ;;
     esac
+}
+function cronjob() {
+        if cron="true"; then
+        read -n 1 -p "Do you want to create a cronjob for automatic renewal? (y/n): " cronjob_choice
+        echo
+        if [[ "$cronjob_choice" == "y" ]]; then
+            renewal="yes"
+            echo "Selecting automatic renewal"
+            job='0 8 * * * /etc/lego/scripts/renewal.sh 2> /dev/null' 
+            (crontab -l 2>/dev/null | grep -Fxq -- "$job") || (crontab -l 2>/dev/null; printf '%s\n' "$job") | crontab - 
+            echo
+        else 
+            echo "Selecting manual renewal"
+            echo
+        fi
+    fi
 }
 function new_cert() {
     # Prompt for web server type
@@ -299,20 +323,6 @@ function new_cert() {
         domain_renew_var="--domains "${domain:?}" --key-type rsa2048 renew"
     fi
     renewal="no"
-    if cron="true"; then
-        read -n 1 -p "Do you want to create a cronjob for automatic renewal? (y/n): " cronjob_choice
-        echo
-        if [[ "$cronjob_choice" == "y" ]]; then
-            renewal="yes"
-            echo "Selecting automatic renewal"
-            job='0 8 * * * /etc/lego/scripts/renewal.sh 2> /dev/null' 
-            (crontab -l 2>/dev/null | grep -Fxq -- "$job") || (crontab -l 2>/dev/null; printf '%s\n' "$job") | crontab - 
-            echo
-        else 
-            echo "Selecting manual renewal"
-            echo
-        fi
-    fi
 
     read -n 1 -p "Do you want to specify where the certificate is saved? (y/n): " custom_path_choice
     echo
@@ -335,7 +345,12 @@ function new_cert() {
         manual)
             if [[ $renewal = no ]]; then
                 echo "LEGO command: sudo lego $registration $val_manual $path_var $eab $domain_var" 
-                sudo lego $registration $val_manual $path_var $eab $domain_var
+                if sudo lego $registration $val_manual $path_var $eab $domain_var; then
+                    echo "The test was a success"
+                else
+                    echo "There was an error during certificate issuance."
+                    exit
+                fi
             fi
             if [[ $renewal = yes ]]; then
                 echo "LEGO command: sudo lego $registration $val_manual $path_var $eab $domain_var"
@@ -353,7 +368,7 @@ function new_cert() {
                     sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/lego/scripts/renewal.sh
                     echo "sudo systemctl restart apache2" >> /etc/lego/scripts/renewal.sh
                 fi
-
+                cronjob
             fi
             if [[ $server != "other" ]]; then
                 echo "Attempting to restart web server: $server"
@@ -388,6 +403,7 @@ function new_cert() {
                     sudo sed -i.bak "/. \/etc\/lego\/scripts\/azure_credentials/d" /etc/lego/scripts/renewal.sh
                     echo ". /etc/lego/scripts/azure_credentials" >> /etc/lego/scripts/renewal.sh
                 fi
+                cronjob
             fi
             if [[ $server != "other" ]]; then
                 echo "Attempting to restart web server: $server"
@@ -417,6 +433,7 @@ function new_cert() {
                     sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/lego/scripts/renewal.sh
                     echo "sudo systemctl restart apache2" >> /etc/lego/scripts/renewal.sh
                 fi
+                cronjob
             fi
             if [[ $server != "other" ]]; then
                 echo "Attempting to restart web server: $server"

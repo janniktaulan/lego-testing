@@ -233,7 +233,7 @@ function cronjob() {
         if [[ "$cronjob_choice" == "y" ]]; then
             renewal="yes"
             echo "Selecting automatic renewal"
-            job='0 0 1 * * /etc/tz-bot/scripts/renewal.sh 2> /dev/null' 
+            job='0 8 * * 1 /etc/tz-bot/scripts/renewal.sh 2> /dev/null' 
             (crontab -l 2>/dev/null | grep -Fxq -- "$job") || (crontab -l 2>/dev/null; printf '%s\n' "$job") | crontab - 
             echo
         else 
@@ -326,10 +326,10 @@ function new_cert() {
     if [[ "$domain" == "*."* ]]; then
         domain_non_wc="${domain#*.}"
         domain_var="--domains "${domain:?}" --domains "${domain_non_wc:?}" --key-type rsa2048 run"
-        domain_renew_var="--domains "${domain:?}" --domains "${domain_non_wc:?}" --key-type rsa2048 renew"
+        domain_renew_var="--domains "${domain:?}" --domains "${domain_non_wc:?}" --key-type rsa2048 renew --days 45"
     else
         domain_var="--domains "${domain:?}" --key-type rsa2048 run"
-        domain_renew_var="--domains "${domain:?}" --key-type rsa2048 renew"
+        domain_renew_var="--domains "${domain:?}" --key-type rsa2048 renew --days 45"
     fi
     renewal="no"
 
@@ -356,13 +356,15 @@ function new_cert() {
             if sudo lego $registration $val_manual $path_var $eab $domain_var; then
                 cronjob
             else
+                echo ""
+                echo "ATTENTION:"
                 echo "There was a problem with the certificate request. Please check your credentials and domain validation."
                 echo "You can also contact TRUSTZONE support at support@trustzone.com"
                 exit
             fi
             if [[ $renewal = yes ]]; then
                 echo "Updating renewal list at: /etc/tz-bot/scripts/renewal_list"
-                echo "sudo lego $registration $val_manual $path_var $eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
+                echo "sudo lego $registration $val_manual $path_var --eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
                 if [[ $server != "other" ]]; then
                     echo "sudo systemctl restart $server" >> /etc/tz-bot/scripts/renewal_list
                 fi
@@ -392,13 +394,15 @@ function new_cert() {
             if sudo -E lego $registration $val_azure $path_var $eab $domain_var; then
                 cronjob
             else
+                echo ""
+                echo "ATTENTION:"
                 echo "There was a problem with the certificate request. Please check your credentials and domain validation."
                 echo "You can also contact TRUSTZONE support at support@trustzone.com"
                 exit
             fi
             if [[ $renewal = yes ]]; then
                 echo "Updating renewal list at: /etc/tz-bot/scripts/renewal_list"
-                echo "sudo -E lego $registration $val_azure $path_var $eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
+                echo "sudo -E lego $registration $val_azure $path_var --eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
                 if [[ $server != "other" ]]; then
                     echo "sudo systemctl restart $server" >> /etc/tz-bot/scripts/renewal_list
                 fi
@@ -427,13 +431,15 @@ function new_cert() {
             if sudo lego $registration $val_http $path_var $eab $domain_var; then
                 cronjob
             else
+                echo ""
+                echo "ATTENTION:"
                 echo "There was a problem with the certificate request. Please check your credentials and domain validation."
                 echo "You can also contact TRUSTZONE support at support@trustzone.com"
                 exit
             fi
             if [[ $renewal = yes ]]; then
                 echo "Updating renewal list at: /etc/tz-bot/scripts/renewal_list"
-                echo "sudo lego $registration $val_http $path_var $eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
+                echo "sudo lego $registration $val_http $path_var --eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
                 if [[ $server != "other" ]]; then
                     echo "sudo systemctl restart $server" >> /etc/tz-bot/scripts/renewal_list
                 fi

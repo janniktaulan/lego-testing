@@ -110,7 +110,7 @@ function renewal_management() {
                         if sudo grep -q 'sudo lego' /etc/tz-bot/scripts/renewal_list; then
                             echo "Keeping crontab entry, since there are still renewals left in the script."
                         else
-                            sudo crontab -l | grep -v '/etc/tz-bot/scripts/renewal_list' | sudo crontab -
+                            sudo crontab -l | grep -v '/etc/tz-bot/scripts/renewal.sh' | sudo crontab -
                             echo "Crontab entry removed, since no renewals are left in the script."
                         fi
                     else

@@ -234,7 +234,7 @@ function start_prompt() {
     esac
 }
 function cronjob() {
-        if cron="true"; then
+    if cron="true"; then
         read -n 1 -p "Do you want to create a cronjob for automatic renewal? (y/n): " cronjob_choice
         echo
         if [[ "$cronjob_choice" == "y" ]]; then
@@ -243,18 +243,14 @@ function cronjob() {
             job='0 8 * * 1 /etc/tz-bot/scripts/renewal.sh 2> /dev/null' 
             (crontab -l 2>/dev/null | grep -Fxq -- "$job") || (crontab -l 2>/dev/null; printf '%s\n' "$job") | crontab - 
             read -n 1 -p "Do you want to setup automatic reload of your web server? (This will reload your web server everytime the cronjob runs, regardless of renewals) (y/n): " reload_choice
-                if [[ "$reload_choice" == "y" ]]; then
-                    read -p "Please enter your desired reload command: " reload_command
-                    automatic_restart="yes"
-                    return reload_command
-                    else
-                        echo "Proceeding without automatic reload."
-                        echo "Warning: Your server might not pick up new certificates until it is manually reloaded."
-                    fi
-                else
-                    echo "Automatic web server reload not selected."
-                fi
-            echo
+            if [[ "$reload_choice" == "y" ]]; then
+                read -p "Please enter your desired reload command: " reload_command
+                automatic_restart="yes"
+                return $reload_command
+            else
+                echo "Proceeding without automatic reload."
+                echo "Warning: Your server might not pick up new certificates until it is manually reloaded."
+            fi
         else 
             echo "Selecting manual renewal"
             echo

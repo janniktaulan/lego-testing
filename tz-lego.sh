@@ -71,9 +71,10 @@ function renewal_management() {
     echo ""
     echo "Renewal management:"
     echo "1. List renewals"
-    echo "2. Remove a cronjob renewal"
-    echo "3. Remove all cronjob renewals"
-    echo "4. Back to main menu"
+    echo "2. Force renew all certificates"
+    echo "3. Remove a cronjob renewal"
+    echo "4. Remove all cronjob renewals"
+    echo "5. Back to main menu"
     read -n 1 -p "Enter choice [1-4]: " renewal_choice
     echo
     case $renewal_choice in
@@ -90,6 +91,12 @@ function renewal_management() {
             renewal_management
             ;;
         2)
+            sudo bash /etc/tz-bot/scripts/renewal.sh
+            echo ""
+            echo "Running renewal script at: /etc/tz-bot/scripts/renewal.sh"
+            renewal_management
+            ;;
+        3)
             if ! grep -q "sudo lego" "/etc/tz-bot/scripts/renewal_list"; then
                 echo ""
                 echo "No renewals found."
@@ -123,7 +130,7 @@ function renewal_management() {
                 fi
             fi
             ;;
-        3)
+        4)
             echo "Are you sure you want to remove ALL cronjob renewals? This action cannot be undone."
             read -n 1 -p "Type 'y' to confirm, or 'n' to cancel: " confirm_all_removal
             echo
@@ -139,7 +146,7 @@ function renewal_management() {
                 renewal_management
             fi
             ;;
-        4)
+        5)
             start_prompt
             ;;
         *)
@@ -363,8 +370,13 @@ function new_cert() {
                 exit
             fi
             if [[ $renewal = yes ]]; then
-                echo "Updating renewal list at: /etc/tz-bot/scripts/renewal_list"
-                echo "sudo lego $registration $val_manual $path_var --eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
+                echo "Checking for existing renewal"
+                if sudo grep -q -- "--domains $domain" "/etc/tz-bot/scripts/renewal_list"; then
+                    echo "Renewal for $domain already exists in renewal list. Skipping addition."
+                    else
+                    echo "Updating renewal list at: /etc/tz-bot/scripts/renewal_list"
+                    echo "sudo lego $registration $val_manual $path_var --eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
+                    fi
                 if [[ $server != "other" ]]; then
                     echo "sudo systemctl restart $server" >> /etc/tz-bot/scripts/renewal_list
                 fi

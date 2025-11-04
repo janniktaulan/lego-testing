@@ -242,6 +242,18 @@ function cronjob() {
             echo "Selecting automatic renewal"
             job='0 8 * * 1 /etc/tz-bot/scripts/renewal.sh 2> /dev/null' 
             (crontab -l 2>/dev/null | grep -Fxq -- "$job") || (crontab -l 2>/dev/null; printf '%s\n' "$job") | crontab - 
+            read -n 1 -p "Do you want to setup automatic reload of your web server? (This will reload your web server everytime the cronjob runs, regardless of renewals) (y/n): " reload_choice
+                if [[ "$reload_choice" == "y" ]]; then
+                    read -p "Please enter your desired reload command: " reload_command
+                    automatic_restart="yes"
+                    return reload_command
+                    else
+                        echo "Proceeding without automatic reload."
+                        echo "Warning: Your server might not pick up new certificates until it is manually reloaded."
+                    fi
+                else
+                    echo "Automatic web server reload not selected."
+                fi
             echo
         else 
             echo "Selecting manual renewal"
@@ -250,36 +262,6 @@ function cronjob() {
     fi
 }
 function new_cert() {
-    # Prompt for web server type
-    echo "Which web server are you ordering a certificate for?"
-    echo "1: Nginx"
-    echo "2: Apache"
-    echo "3: Other (No automatic restart)"
-    read -n 1 -p "Enter choice [1-2]: " server_choice
-    echo
-
-    case $server_choice in
-        1)
-            server="nginx"
-            echo "Server: Nginx"
-            echo
-            ;;
-        2)
-            server="apache2"
-            echo "Server: Apache"
-            echo
-            ;;
-        3)
-            server="other"
-            echo "Server: Other (No automatic restart)"
-            echo
-            ;;
-        *)
-            echo "Invalid choice. Exiting."
-            exit 1
-            ;;
-    esac
-
     # Prompt for validation method
     echo "How do you want to validate?"
     echo "1: Pre-validated domain"
@@ -376,25 +358,25 @@ function new_cert() {
                     else
                     echo "Updating renewal list at: /etc/tz-bot/scripts/renewal_list"
                     echo "sudo lego $registration $val_manual $path_var --eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
+                fi
+                if [[ $automatic_restart != "yes" ]]; then
+                    read -n 1 -p "Do you want to reload your webserver now? (y/n): " reload_manual
+                    if [[ $reload_manual = "y" ]]; then
+                        read -n 1 -p "Please enter reload command: " reload_manual_command
+                        $reload_manual_command
                     fi
-                if [[ $server != "other" ]]; then
-                    echo "sudo systemctl restart $server" >> /etc/tz-bot/scripts/renewal_list
-                fi
-                if grep -q nginx "/etc/tz-bot/scripts/renewal_list"; then
-                    sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/tz-bot/scripts/renewal_list
-                    echo "sudo systemctl restart nginx" >> /etc/tz-bot/scripts/renewal_list
-                fi
-                if grep -q apache2 "/etc/tz-bot/scripts/renewal_list"; then
-                    sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/tz-bot/scripts/renewal_list
-                    echo "sudo systemctl restart apache2" >> /etc/tz-bot/scripts/renewal_list
-                fi
-            fi
-            if [[ $server != "other" ]]; then
-                echo "Attempting to restart web server: $server"
-                if sudo systemctl restart $server; then
-                    echo "$server restarted successfully."
                 else
-                    echo "Failed to restart $server. Please check the server status manually."
+                    echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list
+                    if grep -q $reload_command "/etc/tz-bot/scripts/renewal_list"; then
+                        sudo sed -i.bak $reload_command /etc/tz-bot/scripts/renewal_list
+                        echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list
+                    fi
+                    echo "Attempting to reload server using command: $reload_command"
+                    if sudo $reload_command; then
+                        echo "Web server reloaded successfully."
+                    else
+                        echo "Failed to reload. You may need to reload manually to pick up new certificates."
+                    fi
                 fi
             fi
             echo "Your certificate is here: $path"

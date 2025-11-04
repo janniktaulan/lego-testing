@@ -75,7 +75,7 @@ function renewal_management() {
     echo "3. Remove a cronjob renewal"
     echo "4. Remove all cronjob renewals"
     echo "5. Back to main menu"
-    read -n 1 -p "Enter choice [1-4]: " renewal_choice
+    read -n 1 -p "Enter choice [1-5]: " renewal_choice
     echo
     case $renewal_choice in
         1)
@@ -483,6 +483,6 @@ function new_cert() {
 }
 
 # Start
-echo "Welcome to TZ-Bot."
+echo "Welcome to TZ-Bot V0.1."
 upkeep
 start_prompt

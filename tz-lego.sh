@@ -235,8 +235,9 @@ function start_prompt() {
 }
 function cronjob() {
     if cron="true"; then
+        echo ""
         read -n 1 -p "Do you want to create a cronjob for automatic renewal? (y/n): " cronjob_choice
-        echo
+        echo ""
         if [[ "$cronjob_choice" == "y" ]]; then
             renewal="yes"
             echo "Selecting automatic renewal"
@@ -245,6 +246,7 @@ function cronjob() {
             echo ""
             read -n 1 -p "Do you want to setup automatic reload of your web server? (This will reload your web server everytime the cronjob runs, regardless of renewals) (y/n): " reload_choice
             if [[ "$reload_choice" == "y" ]]; then
+                echo ""
                 read -p "Please enter your desired reload command: " reload_command
                 automatic_restart="yes"
             else
@@ -364,7 +366,7 @@ function new_cert() {
                 else
                     echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list
                     if grep -q "$reload_command" "/etc/tz-bot/scripts/renewal_list"; then
-                        sudo sed -i.bak "$reload_command" /etc/tz-bot/scripts/renewal_list
+                        sudo sed -i.bak '\#$reload_command#d' /etc/tz-bot/scripts/renewal_list
                         echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list
                     fi
                     echo "Attempting to reload server using command: $reload_command"

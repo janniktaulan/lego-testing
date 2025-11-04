@@ -236,7 +236,8 @@ function start_prompt() {
 function manual_reload() {
     read -n 1 -p "Do you want to reload your webserver now? (y/n): " reload_manual
         if [[ $reload_manual = "y" ]]; then
-            read -n 1 -p "Please enter reload command: " reload_manual_command
+            echo ""
+            read -p "Please enter reload command: " reload_manual_command
             echo "Attempting to reload server using command: $reload_manual_command"
             if sudo $reload_manual_command; then
                 echo "Web server reloaded successfully."
@@ -473,6 +474,6 @@ function new_cert() {
 }
 
 # Start
-echo "Welcome to TZ-Bot V0.1.3"
+echo "Welcome to TZ-Bot V0.1.4"
 upkeep
 start_prompt

@@ -361,7 +361,12 @@ function new_cert() {
                     read -n 1 -p "Do you want to reload your webserver now? (y/n): " reload_manual
                     if [[ $reload_manual = "y" ]]; then
                         read -n 1 -p "Please enter reload command: " reload_manual_command
-                        $reload_manual_command
+                        echo "Attempting to reload server using command: $reload_manual_command"
+                        if sudo $reload_manual_command; then
+                            echo "Web server reloaded successfully."
+                        else
+                            echo "Failed to reload. You may need to reload manually to pick up new certificates."
+                        fi
                     fi
                 else
                     echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list

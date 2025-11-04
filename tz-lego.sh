@@ -91,9 +91,9 @@ function renewal_management() {
             renewal_management
             ;;
         2)
+            echo "Running renewal script at: /etc/tz-bot/scripts/renewal.sh"
             sudo bash /etc/tz-bot/scripts/renewal.sh
             echo ""
-            echo "Running renewal script at: /etc/tz-bot/scripts/renewal.sh"
             renewal_management
             ;;
         3)

@@ -366,7 +366,7 @@ function new_cert() {
                 else
                     echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list
                     if grep -q "$reload_command" "/etc/tz-bot/scripts/renewal_list"; then
-                        sudo sed -i.bak '\#$reload_command#d' /etc/tz-bot/scripts/renewal_list
+                        sudo sed -i.bak "\#$reload_command#d" /etc/tz-bot/scripts/renewal_list
                         echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list
                     fi
                     echo "Attempting to reload server using command: $reload_command"

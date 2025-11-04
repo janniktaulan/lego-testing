@@ -233,6 +233,18 @@ function start_prompt() {
             ;;
     esac
 }
+function manual_reload() {
+    read -n 1 -p "Do you want to reload your webserver now? (y/n): " reload_manual
+        if [[ $reload_manual = "y" ]]; then
+            read -n 1 -p "Please enter reload command: " reload_manual_command
+            echo "Attempting to reload server using command: $reload_manual_command"
+            if sudo $reload_manual_command; then
+                echo "Web server reloaded successfully."
+            else
+                echo "Failed to reload. You may need to reload manually to pick up new certificates."
+                fi
+            fi
+}
 function cronjob() {
     if cron="true"; then
         echo ""
@@ -255,6 +267,7 @@ function cronjob() {
             fi
         else 
             echo "Selecting manual renewal"
+            automatic_restart="no"
             echo
         fi
     fi
@@ -344,7 +357,6 @@ function new_cert() {
                 cronjob
             else
                 echo ""
-                echo "ATTENTION:"
                 echo "There was a problem with the certificate request. Please check your credentials and domain validation."
                 echo "You can also contact TRUSTZONE support at support@trustzone.com"
                 exit
@@ -357,18 +369,7 @@ function new_cert() {
                     echo "Updating renewal list at: /etc/tz-bot/scripts/renewal_list"
                     echo "sudo lego $registration $val_manual $path_var --eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
                 fi
-                if [[ $automatic_restart != "yes" ]]; then
-                    read -n 1 -p "Do you want to reload your webserver now? (y/n): " reload_manual
-                    if [[ $reload_manual = "y" ]]; then
-                        read -n 1 -p "Please enter reload command: " reload_manual_command
-                        echo "Attempting to reload server using command: $reload_manual_command"
-                        if sudo $reload_manual_command; then
-                            echo "Web server reloaded successfully."
-                        else
-                            echo "Failed to reload. You may need to reload manually to pick up new certificates."
-                        fi
-                    fi
-                else
+                if [[ $automatic_restart = "yes" ]]; then
                     echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list
                     if grep -q "$reload_command" "/etc/tz-bot/scripts/renewal_list"; then
                         sudo sed -i.bak "\#$reload_command#d" /etc/tz-bot/scripts/renewal_list
@@ -380,7 +381,11 @@ function new_cert() {
                     else
                         echo "Failed to reload. You may need to reload manually to pick up new certificates."
                     fi
+                else
+                    manual_reload
                 fi
+            else
+                manual_reload
             fi
             echo "Your certificate is here: $path"
             start_prompt

@@ -1,4 +1,35 @@
 #!/bin/bash
+function cronjob() {
+    if cron="true"; then
+        echo ""
+        read -n 1 -p "Do you want to create a cronjob for automatic renewal? (y/n): " cronjob_choice
+        echo ""
+        if [[ "$cronjob_choice" == "y" ]]; then
+            renewal="yes"
+            echo "Selecting automatic renewal"
+            # CHANGE THIS LINE \/ IF YOU WANT TO CHANGE THE INTERVAL OF CRONJOB RUNTIME.
+            job='0 8 * * 1 /etc/tz-bot/scripts/renewal.sh 2> /dev/null' 
+            # CHANGE THIS LINE /\ IF YOU WANT TO CHANGE THE INTERVAL OF CRONJOB RUNTIME.
+            # https://crontab.guru/ is a great site for figuring out which values to put in the cronjob
+            # make sure to check if the old cronjob entry was removed: "sudo crontab -e"
+            (crontab -l 2>/dev/null | grep -Fxq -- "$job") || (crontab -l 2>/dev/null; printf '%s\n' "$job") | crontab - 
+            echo ""
+            read -n 1 -p "Do you want to setup automatic reload of your web server? (This will reload your web server everytime the cronjob runs, regardless of renewals) (y/n): " reload_choice
+            if [[ "$reload_choice" == "y" ]]; then
+                echo ""
+                read -p "Please enter your desired reload command: " reload_command
+                automatic_restart="yes"
+            else
+                echo "Proceeding without automatic reload."
+                echo "Warning: Your server might not pick up new certificates until it is manually reloaded."
+            fi
+        else 
+            echo "Selecting manual renewal"
+            automatic_restart="no"
+            echo
+        fi
+    fi
+}
 function upkeep() {
     if ! command -v lego >/dev/null 2>&1; then
         echo "Lego is not installed."
@@ -246,33 +277,7 @@ function manual_reload() {
                 fi
             fi
 }
-function cronjob() {
-    if cron="true"; then
-        echo ""
-        read -n 1 -p "Do you want to create a cronjob for automatic renewal? (y/n): " cronjob_choice
-        echo ""
-        if [[ "$cronjob_choice" == "y" ]]; then
-            renewal="yes"
-            echo "Selecting automatic renewal"
-            job='0 8 * * 1 /etc/tz-bot/scripts/renewal.sh 2> /dev/null' 
-            (crontab -l 2>/dev/null | grep -Fxq -- "$job") || (crontab -l 2>/dev/null; printf '%s\n' "$job") | crontab - 
-            echo ""
-            read -n 1 -p "Do you want to setup automatic reload of your web server? (This will reload your web server everytime the cronjob runs, regardless of renewals) (y/n): " reload_choice
-            if [[ "$reload_choice" == "y" ]]; then
-                echo ""
-                read -p "Please enter your desired reload command: " reload_command
-                automatic_restart="yes"
-            else
-                echo "Proceeding without automatic reload."
-                echo "Warning: Your server might not pick up new certificates until it is manually reloaded."
-            fi
-        else 
-            echo "Selecting manual renewal"
-            automatic_restart="no"
-            echo
-        fi
-    fi
-}
+
 function new_cert() {
     # Prompt for validation method
     echo "How do you want to validate?"

@@ -242,11 +242,11 @@ function cronjob() {
             echo "Selecting automatic renewal"
             job='0 8 * * 1 /etc/tz-bot/scripts/renewal.sh 2> /dev/null' 
             (crontab -l 2>/dev/null | grep -Fxq -- "$job") || (crontab -l 2>/dev/null; printf '%s\n' "$job") | crontab - 
+            echo ""
             read -n 1 -p "Do you want to setup automatic reload of your web server? (This will reload your web server everytime the cronjob runs, regardless of renewals) (y/n): " reload_choice
             if [[ "$reload_choice" == "y" ]]; then
                 read -p "Please enter your desired reload command: " reload_command
                 automatic_restart="yes"
-                return $reload_command
             else
                 echo "Proceeding without automatic reload."
                 echo "Warning: Your server might not pick up new certificates until it is manually reloaded."
@@ -363,8 +363,8 @@ function new_cert() {
                     fi
                 else
                     echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list
-                    if grep -q $reload_command "/etc/tz-bot/scripts/renewal_list"; then
-                        sudo sed -i.bak $reload_command /etc/tz-bot/scripts/renewal_list
+                    if grep -q "$reload_command" "/etc/tz-bot/scripts/renewal_list"; then
+                        sudo sed -i.bak "$reload_command" /etc/tz-bot/scripts/renewal_list
                         echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list
                     fi
                     echo "Attempting to reload server using command: $reload_command"
@@ -461,6 +461,6 @@ function new_cert() {
 }
 
 # Start
-echo "Welcome to TZ-Bot V0.1.1"
+echo "Welcome to TZ-Bot V0.1.2"
 upkeep
 start_prompt

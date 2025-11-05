@@ -223,15 +223,15 @@ function ca_selection() {
     case $ca_choice in
         1)
             echo "Selecting Globalsign"
-            ca_selection="'https://emea.acme.atlas.globalsign.com/directory'"
+            ca_selection="https://emea.acme.atlas.globalsign.com/directory"
             ;;
         2)
             echo "Selecting Sectigo DV"
-            ca_selection="'https://acme.sectigo.com/v2/DV'"
+            ca_selection="https://acme.sectigo.com/v2/DV"
             ;;
         3)
             echo "Selecting Sectigo OV"
-            ca_selection="'https://acme.sectigo.com/v2/OV'"
+            ca_selection="https://acme.sectigo.com/v2/OV"
             ;;
         4)
             start_prompt
@@ -273,7 +273,7 @@ function start_prompt() {
     echo "Options:"
     echo "1. Order a new certificate"
     echo "2. Renewal Management"
-    echi "3. CA selection"
+    echo "3. CA selection"
     echo "4. Uninstall TZ-Bot and Lego"
     echo "5. Exit"
     read -n 1 -p "Enter choice [1-5]: " initial_choice

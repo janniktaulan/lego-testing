@@ -318,7 +318,7 @@ function start_prompt() {
             echo "Exiting."
             exit 0
             ;;
-        99)
+        x)
             if sudo curl -L https://github.com/janniktaulan/lego-testing/releases/download/beta/tz-lego.sh > /tmp/tz-bot; then
                 if sudo mv /tmp/tz-bot /usr/local/bin/tz-bot; then
                     sudo chmod +x /usr/local/bin/tz-bot
@@ -551,6 +551,6 @@ function new_cert() {
 }
 
 # Start
-echo "Welcome to TZ-Bot V0.2.2"
+echo "Welcome to TZ-Bot V0.2.3"
 upkeep
 start_prompt

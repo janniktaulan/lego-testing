@@ -304,7 +304,7 @@ function start_prompt() {
         3)
             echo ""
             echo "You selected to uninstall TZ-Bot and Lego."
-            echo -n 1 -p "Are you sure you want to proceed? (y/n): " confirm_uninstall
+            read -n 1 -p "Are you sure you want to proceed? (y/n): " confirm_uninstall
             echo ""
             if [[ "$confirm_uninstall" == "y" ]]; then
                 echo "Proceeding to uninstall..."
@@ -551,6 +551,6 @@ function new_cert() {
 }
 
 # Start
-echo "Welcome to TZ-Bot V0.2.1"
+echo "Welcome to TZ-Bot V0.2.2"
 upkeep
 start_prompt

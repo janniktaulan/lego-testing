@@ -85,12 +85,6 @@ function upkeep() {
     fi
     mkdir -p /etc/tz-bot/scripts/
     mkdir -p /etc/tz-bot/certs/
-
-    if ! [ -e "/etc/tz-bot/scripts/ca_selection" ] ; then
-        touch /etc/tz-bot/scripts/ca_selection
-        sudo echo "export ca_selection='https://emea.acme.atlas.globalsign.com/directory'" >> /etc/tz-bot/scripts/ca_selection
-    fi
-    . /etc/tz-bot/scripts/ca_selection
     
     if ! [ -e "/etc/tz-bot/scripts/storage" ] ; then
         touch /etc/tz-bot/scripts/storage
@@ -658,6 +652,6 @@ function new_cert() {
 }
 
 # Start
-echo "Welcome to TZ-Bot V0.3.2"
+echo "Welcome to TZ-Bot V0.3.3"
 upkeep
 start_prompt

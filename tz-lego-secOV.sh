@@ -85,12 +85,6 @@ function upkeep() {
     fi
     mkdir -p /etc/tz-bot/scripts/
     mkdir -p /etc/tz-bot/certs/
-
-    if ! [ -e "/etc/tz-bot/scripts/ca_selection" ] ; then
-        touch /etc/tz-bot/scripts/ca_selection
-        sudo echo "export ca_selection='https://emea.acme.atlas.globalsign.com/directory'" >> /etc/tz-bot/scripts/ca_selection
-    fi
-    . /etc/tz-bot/scripts/ca_selection
     
     if ! [ -e "/etc/tz-bot/scripts/storage" ] ; then
         touch /etc/tz-bot/scripts/storage
@@ -123,6 +117,10 @@ function upkeep() {
     if ! [ -e "/etc/tz-bot/scripts/renewal.sh" ] ; then
         sudo echo "sudo echo '#!/bin/bash' > renew_temp.sh" > /etc/tz-bot/scripts/renewal.sh
         sudo echo "sudo echo '. /etc/tz-bot/scripts/.azure_credentials' >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
+        sudo echo "sudo echo '. /etc/tz-bot/scripts/.aws_credentials' >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
+        sudo echo "sudo echo '. /etc/tz-bot/scripts/.cloudflare_credentials' >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
+        sudo echo "sudo echo '. /etc/tz-bot/scripts/.domeneshop_credentials' >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
+        sudo echo "sudo echo '. /etc/tz-bot/scripts/.infoblox_credentials' >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
         sudo echo "sudo cat /etc/tz-bot/scripts/renewal_list >> /etc/tz-bot/scripts/renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
         sudo echo "chmod +x /etc/tz-bot/scripts/renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
         sudo chmod +x /etc/tz-bot/scripts/renewal.sh
@@ -646,6 +644,6 @@ function new_cert() {
 }
 
 # Start
-echo "Welcome to TZ-Bot V0.3.1"
+echo "Welcome to TZ-Bot V0.3.3"
 upkeep
 start_prompt

@@ -323,7 +323,7 @@ function start_prompt() {
                 if sudo mv /tmp/tz-bot /usr/local/bin/tz-bot; then
                     sudo chmod +x /usr/local/bin/tz-bot
                     sudo mkdir -p /etc/tz-bot
-                    echo "TZ-Bot has been installed successfully. You can now run it using the command 'tz-bot' or 'sudo tz-bot'"
+                    echo "Downloaded the latest release. Run it as you would normally."
                     exit
                 else
                     echo "Installation failed."
@@ -551,6 +551,6 @@ function new_cert() {
 }
 
 # Start
-echo "Welcome to TZ-Bot V0.2"
+echo "Welcome to TZ-Bot V0.2.1"
 upkeep
 start_prompt

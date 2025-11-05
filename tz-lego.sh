@@ -37,6 +37,7 @@ function upkeep() {
             sudo chmod +x /usr/local/bin/tz-bot
             sudo mkdir -p /etc/tz-bot
             echo "TZ-Bot has been installed successfully. You can now run it using the command 'tz-bot' or 'sudo tz-bot'"
+            echo ""
         else
             echo "Installation failed."
             exit 1

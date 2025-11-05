@@ -328,6 +328,7 @@ function start_prompt() {
                     exit 1
                 fi
             fi
+            ;;
         *)
             echo "Invalid choice. Exiting."
             exit 1

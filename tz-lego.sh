@@ -275,6 +275,7 @@ function uninstall() {
             echo "Uninstallation of TZ-bot failed. Please remove manually."
         else
             echo "TZ-bot have been uninstalled successfully."
+        fi
     else
         echo "Uninstallation cancelled."
         exit

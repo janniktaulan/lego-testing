@@ -123,6 +123,10 @@ function upkeep() {
     if ! [ -e "/etc/tz-bot/scripts/renewal.sh" ] ; then
         sudo echo "sudo echo '#!/bin/bash' > renew_temp.sh" > /etc/tz-bot/scripts/renewal.sh
         sudo echo "sudo echo '. /etc/tz-bot/scripts/.azure_credentials' >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
+        sudo echo "sudo echo '. /etc/tz-bot/scripts/.aws_credentials' >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
+        sudo echo "sudo echo '. /etc/tz-bot/scripts/.cloudflare_credentials' >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
+        sudo echo "sudo echo '. /etc/tz-bot/scripts/.domeneshop_credentials' >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
+        sudo echo "sudo echo '. /etc/tz-bot/scripts/.infoblox_credentials' >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
         sudo echo "sudo cat /etc/tz-bot/scripts/renewal_list >> /etc/tz-bot/scripts/renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
         sudo echo "chmod +x /etc/tz-bot/scripts/renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
         sudo chmod +x /etc/tz-bot/scripts/renewal.sh
@@ -654,6 +658,6 @@ function new_cert() {
 }
 
 # Start
-echo "Welcome to TZ-Bot V0.3.1"
+echo "Welcome to TZ-Bot V0.3.2"
 upkeep
 start_prompt

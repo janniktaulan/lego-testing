@@ -247,6 +247,45 @@ function dns_full() {
     echo "export AZURE_ENVIRONMENT=\"public\"" >> /etc/tz-bot/scripts/azure_credentials
     chmod 600 /etc/tz-bot/scripts/azure_credentials
 }
+function uninstall() {
+    echo "Welcome to the TZ-Bot and Lego uninstaller."
+    echo "This will uninstall TZ-Bot and Lego from your system."
+    echo "It will also remove all certificates from /etc/tz-bot/certs/ and all scripts from /etc/tz-bot/scripts/."
+    read -n 1 -p "Are you sure you want to proceed? (y/n): " confirm_uninstall
+    echo
+    if [[ "$confirm_uninstall" == "y" ]]; then
+        echo "Uninstalling TZ-Bot and Lego..."
+        if sudo rm -rf /etc/tz-bot/; then
+            echo "removed /etc/tz-bot/ and all contents inside"
+        else
+            echo "Error deleting /etc/tz-bot/"
+        fi
+        if sudo rm -rf /usr/local/bin/tz-bot; then
+            echo "removed /usr/local/bin/tz-bot"
+        else
+            echo "Error deleting /usr/local/bin/tz-bot"
+        fi
+        if sudo rm -rf /usr/local/bin/lego; then
+            echo "Removed /usr/local/bin/lego"
+        else
+            echo "Error deleting /usr/local/bin/lego"
+        fi
+        sudo crontab -l | grep -v '/etc/tz-bot/scripts/renewal.sh' | sudo crontab -
+        if command -v lego >/dev/null 2>&1; then
+            echo "Uninstallation of Lego failed. Please remove manually."
+        else
+            echo "Lego have been uninstalled successfully."
+            exit
+        fi
+        if command -v tz-bot >/dev/null 2>&1; then
+            echo "Uninstallation of TZ-bot failed. Please remove manually."
+        else
+            echo "TZ-bot have been uninstalled successfully."
+    else
+        echo "Uninstallation cancelled."
+        exit
+    fi
+}
 function start_prompt() {
     echo ""
     echo "Options:"
@@ -268,12 +307,11 @@ function start_prompt() {
             ;;
         3)
             echo "You selected to uninstall TZ-Bot and Lego."
-            read -n 1 -p "Are you sure you want to proceed? (This will open another script and leave tz-bot) (y/n): " confirm_uninstall
+            ead -n 1 -p "Are you sure you want to proceed? (y/n): " confirm_uninstall
             echo ""
             if [[ "$confirm_uninstall" == "y" ]]; then
                 echo "Proceeding to uninstall..."
-                echo ""
-                /etc/tz-bot/tz-bot-remover.sh
+                uninstall
             else
                 echo "Uninstallation cancelled."
                 start_prompt

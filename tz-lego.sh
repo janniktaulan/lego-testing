@@ -302,8 +302,9 @@ function start_prompt() {
             renewal_management
             ;;
         3)
+            echo ""
             echo "You selected to uninstall TZ-Bot and Lego."
-            ead -n 1 -p "Are you sure you want to proceed? (y/n): " confirm_uninstall
+            echo -n 1 -p "Are you sure you want to proceed? (y/n): " confirm_uninstall
             echo ""
             if [[ "$confirm_uninstall" == "y" ]]; then
                 echo "Proceeding to uninstall..."

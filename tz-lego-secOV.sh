@@ -460,28 +460,20 @@ function manual_reload() {
 function new_cert() {
     # Prompt for validation method
     echo "How do you want to validate?"
-    echo "1: Pre-validated domain"
-    echo "2: DNS validation"
-    echo "3: HTTP Validation (Places files for validation in /var/www/html/)"
-    read -n 1 -p "Enter choice [1-3]: " validation_choice
+    echo "1: DNS validation"
+    echo "2: HTTP Validation (Requires port 80 to be open)"
+    read -n 1 -p "Enter choice [1-2]: " validation_choice
     echo
 
     case $validation_choice in
         1)
-            validation="manual"
-            echo "MODE: Pre-validated DNS"
-            echo
-            val_var="--dns manual"
-            read_credentials
-            ;;
-        2)
             validation="DNS"
             echo "MODE: DNS"
             echo
             read_credentials
             dns_full
             ;;
-        3)
+        2)
             validation="http"
             echo "MODE: HTTP Validation"
             echo

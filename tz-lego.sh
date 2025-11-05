@@ -322,7 +322,6 @@ function start_prompt() {
             if sudo curl -L https://github.com/janniktaulan/lego-testing/releases/download/beta/tz-lego.sh > /tmp/tz-bot; then
                 if sudo mv /tmp/tz-bot /usr/local/bin/tz-bot; then
                     sudo chmod +x /usr/local/bin/tz-bot
-                    sudo mkdir -p /etc/tz-bot
                     echo "Downloaded the latest release. Run it as you would normally."
                     exit
                 else

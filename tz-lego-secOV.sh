@@ -115,12 +115,12 @@ function upkeep() {
     fi
     
     if ! [ -e "/etc/tz-bot/scripts/renewal.sh" ] ; then
-        sudo echo "sudo echo '#!/bin/bash' > renew_temp.sh" > /etc/tz-bot/scripts/renewal.sh
-        sudo echo "sudo echo '. /etc/tz-bot/scripts/.azure_credentials' >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
-        sudo echo "sudo echo '. /etc/tz-bot/scripts/.aws_credentials' >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
-        sudo echo "sudo echo '. /etc/tz-bot/scripts/.cloudflare_credentials' >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
-        sudo echo "sudo echo '. /etc/tz-bot/scripts/.domeneshop_credentials' >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
-        sudo echo "sudo echo '. /etc/tz-bot/scripts/.infoblox_credentials' >> renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
+        sudo echo "sudo echo '#!/bin/bash' > /etc/tz-bot/scripts/renew_temp.sh" > /etc/tz-bot/scripts/renewal.sh
+        sudo echo "sudo echo '. /etc/tz-bot/scripts/.azure_credentials' >> /etc/tz-bot/scripts/renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
+        sudo echo "sudo echo '. /etc/tz-bot/scripts/.aws_credentials' >> /etc/tz-bot/scripts/renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
+        sudo echo "sudo echo '. /etc/tz-bot/scripts/.cloudflare_credentials' >> /etc/tz-bot/scripts/renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
+        sudo echo "sudo echo '. /etc/tz-bot/scripts/.domeneshop_credentials' >> /etc/tz-bot/scripts/renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
+        sudo echo "sudo echo '. /etc/tz-bot/scripts/.infoblox_credentials' >> /etc/tz-bot/scripts/renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
         sudo echo "sudo cat /etc/tz-bot/scripts/renewal_list >> /etc/tz-bot/scripts/renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
         sudo echo "chmod +x /etc/tz-bot/scripts/renew_temp.sh" >> /etc/tz-bot/scripts/renewal.sh
         sudo chmod +x /etc/tz-bot/scripts/renewal.sh

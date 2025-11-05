@@ -211,44 +211,6 @@ function read_credentials() {
     echo "export eab_hmac=\"$eab_hmac\"" >> /etc/tz-bot/scripts/user_credentials
     chmod 600 /etc/tz-bot/scripts/user_credentials
 }
-function ca_selection() {
-    echo ""
-    echo "CA Selection:"
-    echo "1. Globalsign"
-    echo "2. Sectigo DV"
-    echo "3. Sectigo OV"
-    echo "4. Back to main menu"
-    read -n 1 -p "Enter choice [1-3]: " ca_choice
-    echo
-    case $ca_choice in
-        1)
-            echo "Selecting Globalsign"
-            ca_selection="https://emea.acme.atlas.globalsign.com/directory"
-            ;;
-        2)
-            echo "Selecting Sectigo DV"
-            ca_selection="https://acme.sectigo.com/v2/DV"
-            ;;
-        3)
-            echo "Selecting Sectigo OV"
-            ca_selection="https://acme.sectigo.com/v2/OV"
-            ;;
-        4)
-            start_prompt
-            ;;
-        *)
-            echo "Invalid choice. Exiting."
-            exit 1
-            ;;
-    esac
-    if sudo echo "export ca_selection='$ca_selection'" > /etc/tz-bot/scripts/ca_selection; then
-        echo "Selected the new CA"
-        start_prompt
-    else
-        echo "Error occured while selecting CA"
-        exit
-    fi
-}
 function dns_full() {
     if grep -q "export AZURE" "/etc/tz-bot/scripts/azure_credentials"; then
     read -n 1 -p "Do you want to reuse saved Azure credentials? (y/n): " reuse_azure
@@ -269,14 +231,13 @@ function dns_full() {
     chmod 600 /etc/tz-bot/scripts/azure_credentials
 }
 function start_prompt() {
-    echo
+    echo ""
     echo "Options:"
     echo "1. Order a new certificate"
     echo "2. Renewal Management"
-    echo "3. CA selection"
-    echo "4. Uninstall TZ-Bot and Lego"
-    echo "5. Exit"
-    read -n 1 -p "Enter choice [1-5]: " initial_choice
+    echo "3. Uninstall TZ-Bot and Lego"
+    echo "4. Exit"
+    read -n 1 -p "Enter choice [1-4]: " initial_choice
     echo
     case $initial_choice in
         1)
@@ -288,10 +249,7 @@ function start_prompt() {
         2)
             renewal_management
             ;;
-        3) 
-            ca_selection
-            ;;
-        4)
+        3)
             echo "You selected to uninstall TZ-Bot and Lego."
             read -n 1 -p "Are you sure you want to proceed? (This will open another script and leave tz-bot) (y/n): " confirm_uninstall
             echo ""
@@ -304,7 +262,7 @@ function start_prompt() {
                 start_prompt
             fi
             ;;
-        5)
+        4)
             echo "Exiting."
             exit 0
             ;;
@@ -327,7 +285,6 @@ function manual_reload() {
                 fi
             fi
 }
-
 function new_cert() {
     # Prompt for validation method
     echo "How do you want to validate?"
@@ -368,7 +325,7 @@ function new_cert() {
     if [ -f /etc/tz-bot/scripts/user_credentials ]; then
         . /etc/tz-bot/scripts/user_credentials
     fi
-    registration="--server $ca_selection --email test123@test.com -a"
+    registration="--server https://emea.acme.atlas.globalsign.com/directory --email test123@test.com -a"
 
     #eab var
     eab="--eab --kid "${eab_kid:?}" --hmac "${eab_hmac:?}""

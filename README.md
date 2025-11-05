@@ -1,7 +1,7 @@
 Installation guide:
 Run the following commands in your linux terminal:
-1. sudo wget https://github.com/janniktaulan/lego-testing/releases/download/beta/tz-bot-installer
-2. source tz-bot-installer
+1. sudo curl -L https://github.com/janniktaulan/lego-testing/releases/download/beta/tz-lego.sh > /tmp/tz-bot
+2. sudo bash /tmp/tz-bot
 
 Uninstallation:
 Can be done from TZ-bot main menu.

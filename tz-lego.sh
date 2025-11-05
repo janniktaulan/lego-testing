@@ -337,9 +337,9 @@ function dns_full() {
             read -p "Please enter your Infoblox username: " infoblox_username
             read -p "Please enter your Infoblox password: " infoblox_password
             read -p "Please enter your Infoblox host: " infoblox_host
-            echo "export INFOBLOX_USERNAME=\"$dinfoblox_username\"" > /etc/tz-bot/scripts/.infoblox_credentials
-            echo "export INFOBLOX_PASSWORD=\"$dinfoblox_password\"" >> /etc/tz-bot/scripts/.infoblox_credentials
-            echo "export INFOBLOX_HOST=\"$dinfoblox_host\"" >> /etc/tz-bot/scripts/.infoblox_credentials
+            echo "export INFOBLOX_USERNAME=\"$infoblox_username\"" > /etc/tz-bot/scripts/.infoblox_credentials
+            echo "export INFOBLOX_PASSWORD=\"$infoblox_password\"" >> /etc/tz-bot/scripts/.infoblox_credentials
+            echo "export INFOBLOX_HOST=\"$infoblox_host\"" >> /etc/tz-bot/scripts/.infoblox_credentials
             chmod 600 /etc/tz-bot/scripts/.infoblox_credentials
             . /etc/tz-bot/scripts/.infoblox_credentials
             ;;

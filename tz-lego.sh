@@ -243,6 +243,7 @@ function dns_full() {
     chmod 600 /etc/tz-bot/scripts/azure_credentials
 }
 function uninstall() {
+    echo ""
     echo "Welcome to the TZ-Bot and Lego uninstaller."
     echo "This will uninstall TZ-Bot and Lego from your system."
     echo "It will also remove all certificates from /etc/tz-bot/certs/ and all scripts from /etc/tz-bot/scripts/."
@@ -270,13 +271,13 @@ function uninstall() {
             echo "Uninstallation of Lego failed. Please remove manually."
         else
             echo "Lego have been uninstalled successfully."
-            exit
         fi
         if command -v tz-bot >/dev/null 2>&1; then
             echo "Uninstallation of TZ-bot failed. Please remove manually."
         else
             echo "TZ-bot have been uninstalled successfully."
         fi
+        exit
     else
         echo "Uninstallation cancelled."
         exit
@@ -550,6 +551,6 @@ function new_cert() {
 }
 
 # Start
-echo "Welcome to TZ-Bot V0.2.3"
+echo "Welcome to TZ-Bot V0.2.4"
 upkeep
 start_prompt

@@ -547,6 +547,6 @@ function new_cert() {
 }
 
 # Start
-echo "Welcome to TZ-Bot V0.1.4"
+echo "Welcome to TZ-Bot V0.2"
 upkeep
 start_prompt

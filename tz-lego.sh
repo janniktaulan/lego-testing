@@ -36,12 +36,6 @@ function upkeep() {
         if sudo mv /tmp/tz-bot /usr/local/bin/tz-bot; then
             sudo chmod +x /usr/local/bin/tz-bot
             sudo mkdir -p /etc/tz-bot
-            if sudo curl -L https://github.com/janniktaulan/lego-testing/releases/download/beta/tz-bot-remover.sh > /tmp/tz-bot-remover.sh; then
-                sudo mv /tmp/tz-bot-remover.sh /etc/tz-bot/tz-bot-remover.sh
-                sudo chmod +x /etc/tz-bot/tz-bot-remover.sh
-            else
-                echo "WARNING: Could not install TZ-bot-remover"
-            fi
             echo "TZ-Bot has been installed successfully. You can now run it using the command 'tz-bot' or 'sudo tz-bot'"
         else
             echo "Installation failed."
@@ -321,6 +315,18 @@ function start_prompt() {
             echo "Exiting."
             exit 0
             ;;
+        99)
+            if sudo curl -L https://github.com/janniktaulan/lego-testing/releases/download/beta/tz-lego.sh > /tmp/tz-bot; then
+                if sudo mv /tmp/tz-bot /usr/local/bin/tz-bot; then
+                    sudo chmod +x /usr/local/bin/tz-bot
+                    sudo mkdir -p /etc/tz-bot
+                    echo "TZ-Bot has been installed successfully. You can now run it using the command 'tz-bot' or 'sudo tz-bot'"
+                    exit
+                else
+                    echo "Installation failed."
+                    exit 1
+                fi
+            fi
         *)
             echo "Invalid choice. Exiting."
             exit 1

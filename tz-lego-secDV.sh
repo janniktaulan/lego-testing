@@ -499,7 +499,7 @@ function new_cert() {
     if [ -f /etc/tz-bot/scripts/.user_credentials ]; then
         . /etc/tz-bot/scripts/.user_credentials
     fi
-    registration="--server https://emea.acme.atlas.globalsign.com/directory --email test123@test.com -a"
+    registration="--server https://acme.sectigo.com/v2/DV --email test123@test.com -a"
 
     #eab var
     eab="--eab --kid "${eab_kid:?}" --hmac "${eab_hmac:?}""

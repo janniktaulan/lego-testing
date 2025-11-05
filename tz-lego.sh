@@ -31,6 +31,23 @@ function cronjob() {
     fi
 }
 function upkeep() {
+    if ! command -v tz-bot >/dev/null 2>&1; then
+        sudo mkdir -p /usr/local/bin
+        if sudo mv /tmp/tz-bot /usr/local/bin/tz-bot; then
+            sudo chmod +x /usr/local/bin/tz-bot
+            sudo mkdir -p /etc/tz-bot
+            if sudo curl -L https://github.com/janniktaulan/lego-testing/releases/download/beta/tz-bot-remover.sh > /tmp/tz-bot-remover.sh; then
+                sudo mv /tmp/tz-bot-remover.sh /etc/tz-bot/tz-bot-remover.sh
+                sudo chmod +x /etc/tz-bot/tz-bot-remover.sh
+            else
+                echo "WARNING: Could not install TZ-bot-remover"
+            fi
+            echo "TZ-Bot has been installed successfully. You can now run it using the command 'tz-bot' or 'sudo tz-bot'"
+        else
+            echo "Installation failed."
+            exit 1
+        fi
+    fi
     if ! command -v lego >/dev/null 2>&1; then
         echo "Lego is not installed."
         read -n 1 -p "Do you want TZ-bot to try installing Lego? (y/n): " install_choice

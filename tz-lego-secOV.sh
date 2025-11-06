@@ -430,7 +430,7 @@ function start_prompt() {
             exit 0
             ;;
         x)
-            if sudo curl -L https://github.com/janniktaulan/lego-testing/releases/download/beta/tz-lego.sh > /tmp/tz-bot; then
+            if sudo curl -L https://github.com/janniktaulan/lego-testing/releases/download/beta/tz-lego-secOV.sh > /tmp/tz-bot; then
                 if sudo mv /tmp/tz-bot /usr/local/bin/tz-bot; then
                     sudo chmod +x /usr/local/bin/tz-bot
                     echo "Downloaded the latest release. Run it as you would normally."
@@ -450,28 +450,20 @@ function start_prompt() {
 function new_cert() {
     # Prompt for validation method
     echo "How do you want to validate?"
-    echo "1: Pre-validated domain"
-    echo "2: DNS validation"
-    echo "3: HTTP Validation (Requires port 80 to be open)"
-    read -n 1 -p "Enter choice [1-3]: " validation_choice
+    echo "1: DNS validation"
+    echo "2: HTTP Validation (Requires port 80 to be open)"
+    read -n 1 -p "Enter choice [1-2]: " validation_choice
     echo
 
     case $validation_choice in
         1)
-            validation="manual"
-            echo "MODE: Pre-validated DNS"
-            echo
-            val_var="--dns manual"
-            read_credentials
-            ;;
-        2)
             validation="DNS"
             echo "MODE: DNS"
             echo
             read_credentials
             dns_full
             ;;
-        3)
+        2)
             validation="http"
             echo "MODE: HTTP Validation"
             echo
@@ -489,7 +481,7 @@ function new_cert() {
     if [ -f /etc/tz-bot/scripts/.user_credentials ]; then
         . /etc/tz-bot/scripts/.user_credentials
     fi
-    registration="--server https://emea.acme.atlas.globalsign.com/directory --email test123@test.com -a"
+    registration="--server https://acme.sectigo.com/v2/OV --email test123@test.com -a"
 
     #eab var
     eab="--eab --kid "${eab_kid:?}" --hmac "${eab_hmac:?}""

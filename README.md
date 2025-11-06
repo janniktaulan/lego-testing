@@ -1,7 +1,24 @@
 Installation guide:
-Run the following commands in your linux terminal:
-1. sudo wget https://github.com/janniktaulan/lego-testing/releases/download/beta/tz-bot-installer
-2. source tz-bot-installer
+
+First, run the following command in your linux terminal:
+
+Depending on the product:
+
+**Sectigo DV:**
+
+sudo curl -L https://github.com/janniktaulan/lego-testing/releases/download/beta/tz-lego-secDV.sh > /tmp/tz-bot
+
+**Sectigo OV:**
+
+sudo curl -L https://github.com/janniktaulan/lego-testing/releases/download/beta/tz-lego-secOV.sh > /tmp/tz-bot
+
+**Globalsign:**
+
+sudo curl -L https://github.com/janniktaulan/lego-testing/releases/download/beta/tz-lego.sh > /tmp/tz-bot
+
+**Then run this command:**
+
+sudo bash /tmp/tz-bot
 
 Uninstallation:
 Can be done from TZ-bot main menu.

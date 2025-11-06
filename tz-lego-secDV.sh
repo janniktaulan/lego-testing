@@ -638,6 +638,7 @@ function new_cert() {
                     echo "Failed to restart $server. Please check the server status manually."
                 fi
             fi
+            echo ""
             echo "Your certificate is here: $path"
             start_prompt
             ;;

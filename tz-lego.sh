@@ -13,6 +13,7 @@ function cronjob() {
             # https://crontab.guru/ is a great site for figuring out which values to put in the cronjob
             # make sure to check if the old cronjob entry was removed: "sudo crontab -e"
             (crontab -l 2>/dev/null | grep -Fxq -- "$job") || (crontab -l 2>/dev/null; printf '%s\n' "$job") | crontab - 
+            echo ""
             read -n 1 -p "Do you want to setup automatic reload of your web server? (This will reload your web server everytime the cronjob runs, regardless of renewals) (y/n): " reload_choice
             if [[ "$reload_choice" == "y" ]]; then
                 automatic_restart="yes"
@@ -44,9 +45,10 @@ function auto_reload() {
     else
         echo "Failed to reload using: '$reload_command'"
         read -n 1 -p "Would you like to try another reload command? (y/n): " retry_reload
-        if [[ "$retry_reload" = "yes" ]]; then
+        if [[ "$retry_reload" = "y" ]]; then
             auto_reload
         else
+            echo ""
             echo "Automatic server reloading cancelled."
         fi
     fi
@@ -477,6 +479,7 @@ function ordering() {
         exit
     fi
     if [[ $renewal = yes ]]; then
+        echo ""
         echo "Checking for existing renewal"
         if sudo grep -q -- "--domains $domain" "/etc/tz-bot/scripts/renewal_list"; then
             echo "Renewal for $domain already exists in renewal list. Skipping addition."

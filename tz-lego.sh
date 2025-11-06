@@ -430,7 +430,7 @@ function start_prompt() {
             exit 0
             ;;
         x)
-            if sudo curl -L https://github.com/janniktaulan/lego-testing/releases/download/beta/tz-lego.sh > /tmp/tz-bot; then
+            if sudo curl -L https://github.com/janniktaulan/lego-testing/releases/download/Stable%2FOfficial/tz-lego.sh > /tmp/tz-bot; then
                 if sudo mv /tmp/tz-bot /usr/local/bin/tz-bot; then
                     sudo chmod +x /usr/local/bin/tz-bot
                     echo "Downloaded the latest release. Run it as you would normally."
@@ -643,6 +643,6 @@ function new_cert() {
 }
 
 # Start
-echo "Welcome to TZ-Bot V0.3.4"
+echo "Welcome to TZ-Bot V1.0"
 upkeep
 start_prompt

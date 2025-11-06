@@ -447,19 +447,6 @@ function start_prompt() {
             ;;
     esac
 }
-function manual_reload() {
-    read -n 1 -p "Do you want to reload your webserver now? (y/n): " reload_manual
-        if [[ $reload_manual = "y" ]]; then
-            echo ""
-            read -p "Please enter reload command: " reload_manual_command
-            echo "Attempting to reload server using command: $reload_manual_command"
-            if sudo $reload_manual_command; then
-                echo "Web server reloaded successfully."
-            else
-                echo "Failed to reload. You may need to reload manually to pick up new certificates."
-                fi
-            fi
-}
 function new_cert() {
     # Prompt for validation method
     echo "How do you want to validate?"
@@ -566,11 +553,6 @@ function new_cert() {
                     else
                         echo "Failed to reload. You may need to reload manually to pick up new certificates."
                     fi
-                else
-                    manual_reload
-                fi
-            else
-                manual_reload
             fi
             echo ""
             echo "Your certificate is here: $path"

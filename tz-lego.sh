@@ -44,7 +44,7 @@ function auto_reload() {
     else
         echo "Failed to reload using: '$reload_command'"
         read -n 1 -p "Would you like to try another reload command? (y/n): " retry_reload
-        if [[ $retry_reload = "yes" ]]; then
+        if [[ "$retry_reload" = "yes" ]]; then
             auto_reload
         else
             echo "Automatic server reloading cancelled."
@@ -480,10 +480,10 @@ function ordering() {
         echo "Checking for existing renewal"
         if sudo grep -q -- "--domains $domain" "/etc/tz-bot/scripts/renewal_list"; then
             echo "Renewal for $domain already exists in renewal list. Skipping addition."
-            else
+        else
             echo "Updating renewal list at: /etc/tz-bot/scripts/renewal_list"
             echo "sudo $lego_var $registration $val_var $path_var --eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
-            if [[ $automatic_restart = yes]]; then
+            if [[ "$automatic_restart" = "yes"]]; then
                 auto_reload
             fi
         fi

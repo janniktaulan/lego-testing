@@ -183,6 +183,9 @@ function renewal_management() {
                         else
                             sudo crontab -l | grep -v '/etc/tz-bot/scripts/renewal.sh' | sudo crontab -
                             echo "Crontab entry removed, since no renewals are left in the script."
+                            sudo rm /etc/tz-bot/scripts/renewal_list
+                            sudo touch /etc/tz-bot/scripts/renewal_list
+                            chmod 600 /etc/tz-bot/scripts/renewal_list
                         fi
                     else
                         echo "Failed to remove renewal from script."

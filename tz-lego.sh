@@ -33,20 +33,23 @@ function cronjob() {
 function auto_reload() {
     echo ""
     read -p "Please enter your desired reload command: " reload_command
-            echo "Attempting to reload server using command: $reload_command"
-            if sudo $reload_command; then
-                echo "Web server reloaded successfully."
-                echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list
-                if grep -q "$reload_command" "/etc/tz-bot/scripts/renewal_list"; then
-                    sudo sed -i.bak "\#$reload_command#d" /etc/tz-bot/scripts/renewal_list
-                    echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list
-                fi
-            else
-                echo "Failed to reload using: '$reload_command'"
-                read -n 1 -p "Would you like to try another reload command? (y/n): " retry_reload
-                if [[ $retry_reload = "yes" ]]; then
-                    auto_reload
-            fi
+    echo "Attempting to reload server using command: $reload_command"
+    if sudo $reload_command; then
+        echo "Web server reloaded successfully."
+        echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list
+        if grep -q "$reload_command" "/etc/tz-bot/scripts/renewal_list"; then
+            sudo sed -i.bak "\#$reload_command#d" /etc/tz-bot/scripts/renewal_list
+            echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list
+        fi
+    else
+        echo "Failed to reload using: '$reload_command'"
+        read -n 1 -p "Would you like to try another reload command? (y/n): " retry_reload
+        if [[ $retry_reload = "yes" ]]; then
+            auto_reload
+        else
+            echo "Automatic server reloading cancelled."
+        fi
+    fi
 }
 function upkeep() {
     if ! command -v tz-bot >/dev/null 2>&1; then

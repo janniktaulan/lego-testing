@@ -44,6 +44,7 @@ function auto_reload() {
         fi
     else
         echo "Failed to reload using: '$reload_command'"
+        echo ""
         read -n 1 -p "Would you like to try another reload command? (y/n): " retry_reload
         if [[ "$retry_reload" = "y" ]]; then
             auto_reload
@@ -575,6 +576,6 @@ function new_cert() {
 }
 
 # Start
-echo "Welcome to TZ-Bot V1.1.1"
+echo "Welcome to TZ-Bot V1.1.2"
 upkeep
 start_prompt

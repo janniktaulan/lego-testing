@@ -289,7 +289,7 @@ function dns_full() {
             read -p "Please enter your AWS Region: " aws_region
             echo "export AWS_ACCESS_KEY_ID=\"$aws_access_key_id\"" > /etc/tz-bot/scripts/.aws_credentials
             echo "export AWS_SECRET_ACCESS_KEY=\"$aws_secret_access_key\"" >> /etc/tz-bot/scripts/.aws_credentials
-            echo "export AWS_ACCESS_REGION=\"$aws_region\"" >> /etc/tz-bot/scripts/.aws_credentials
+            echo "export AWS_REGION=\"$aws_region\"" >> /etc/tz-bot/scripts/.aws_credentials
             chmod 600 /etc/tz-bot/scripts/.aws_credentials
             . /etc/tz-bot/scripts/.aws_credentials
             ;;

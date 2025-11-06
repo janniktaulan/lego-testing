@@ -483,9 +483,9 @@ function ordering() {
         else
             echo "Updating renewal list at: /etc/tz-bot/scripts/renewal_list"
             echo "sudo $lego_var $registration $val_var $path_var --eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
-            if [[ "$automatic_restart" == "yes"]]; then
-                auto_reload
-            fi
+        fi
+        if [[ "$automatic_restart" == "yes"]]; then
+            auto_reload
         fi
     fi
     echo ""

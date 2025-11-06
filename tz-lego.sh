@@ -458,21 +458,21 @@ function new_cert() {
 
     case $validation_choice in
         1)
-            validation="manual"
+            lego_var="lego"
             echo "MODE: Pre-validated DNS"
             echo
             val_var="--dns manual"
             read_credentials
             ;;
         2)
-            validation="DNS"
+            lego_var="-E lego"
             echo "MODE: DNS"
             echo
             read_credentials
             dns_full
             ;;
         3)
-            validation="http"
+            lego_var="lego"
             echo "MODE: HTTP Validation"
             echo
             val_var="--http --http.webroot /var/www/html/"
@@ -522,127 +522,44 @@ function new_cert() {
 
     fi
 
-    case $validation in
-        manual)
-            echo "LEGO command: sudo lego $registration $val_var $path_var $eab $domain_var"
-            if sudo lego $registration $val_var $path_var $eab $domain_var; then
-                cronjob
+
+    echo "LEGO command: sudo $lego_var $registration $val_var $path_var $eab $domain_var"
+    if sudo $lego_var $registration $val_var $path_var $eab $domain_var; then
+        cronjob
+    else
+        echo ""
+        echo "There was a problem with the certificate request. Please check your credentials and domain validation."
+        echo "You can also contact TRUSTZONE support at support@trustzone.com"
+        exit
+    fi
+    if [[ $renewal = yes ]]; then
+        echo "Checking for existing renewal"
+        if sudo grep -q -- "--domains $domain" "/etc/tz-bot/scripts/renewal_list"; then
+            echo "Renewal for $domain already exists in renewal list. Skipping addition."
             else
-                echo ""
-                echo "There was a problem with the certificate request. Please check your credentials and domain validation."
-                echo "You can also contact TRUSTZONE support at support@trustzone.com"
-                exit
+            echo "Updating renewal list at: /etc/tz-bot/scripts/renewal_list"
+            echo "sudo $lego_var $registration $val_var $path_var --eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
+        fi
+        if [[ $automatic_restart = "yes" ]]; then
+            echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list
+            if grep -q "$reload_command" "/etc/tz-bot/scripts/renewal_list"; then
+                sudo sed -i.bak "\#$reload_command#d" /etc/tz-bot/scripts/renewal_list
+                echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list
             fi
-            if [[ $renewal = yes ]]; then
-                echo "Checking for existing renewal"
-                if sudo grep -q -- "--domains $domain" "/etc/tz-bot/scripts/renewal_list"; then
-                    echo "Renewal for $domain already exists in renewal list. Skipping addition."
-                    else
-                    echo "Updating renewal list at: /etc/tz-bot/scripts/renewal_list"
-                    echo "sudo lego $registration $val_var $path_var --eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
-                fi
-                if [[ $automatic_restart = "yes" ]]; then
-                    echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list
-                    if grep -q "$reload_command" "/etc/tz-bot/scripts/renewal_list"; then
-                        sudo sed -i.bak "\#$reload_command#d" /etc/tz-bot/scripts/renewal_list
-                        echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list
-                    fi
-                    echo "Attempting to reload server using command: $reload_command"
-                    if sudo $reload_command; then
-                        echo "Web server reloaded successfully."
-                    else
-                        echo "Failed to reload. You may need to reload manually to pick up new certificates."
-                    fi
-                fi
-            fi
-            echo ""
-            echo "Your certificate is here: $path"
-            start_prompt
-            ;;
-        DNS)
-            echo "LEGO command: sudo -E lego $registration $val_var $path_var $eab $domain_var"
-            if sudo -E lego $registration $val_var $path_var $eab $domain_var; then
-                cronjob
+            echo "Attempting to reload server using command: $reload_command"
+            if sudo $reload_command; then
+                echo "Web server reloaded successfully."
             else
-                echo ""
-                echo "ATTENTION:"
-                echo "There was a problem with the certificate request. Please check your credentials and domain validation."
-                echo "You can also contact TRUSTZONE support at support@trustzone.com"
-                exit
+                echo "Failed to reload. You may need to reload manually to pick up new certificates."
             fi
-            if [[ $renewal = yes ]]; then
-                echo "Updating renewal list at: /etc/tz-bot/scripts/renewal_list"
-                echo "sudo -E lego $registration $val_var $path_var --eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
-                if [[ $server != "other" ]]; then
-                    echo "sudo systemctl restart $server" >> /etc/tz-bot/scripts/renewal_list
-                fi
-                if grep -q nginx "/etc/tz-bot/scripts/renewal_list"; then
-                    sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/tz-bot/scripts/renewal_list
-                    echo "sudo systemctl restart nginx" >> /etc/tz-bot/scripts/renewal_list
-                fi
-                if grep -q apache2 "/etc/tz-bot/scripts/renewal_list"; then
-                    sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/tz-bot/scripts/renewal_list
-                    echo "sudo systemctl restart apache2" >> /etc/tz-bot/scripts/renewal_list
-                fi
-            fi
-            if [[ $server != "other" ]]; then
-                echo "Attempting to restart web server: $server"
-                if sudo systemctl restart $server; then
-                    echo "$server restarted successfully."
-                else
-                    echo "Failed to restart $server. Please check the server status manually."
-                fi
-            fi
-            echo ""
-            echo "Your certificate is here: $path"
-            start_prompt
-            ;;
-        http)
-            echo "LEGO command: sudo lego $registration $val_var $path_var $eab $domain_var"
-            if sudo lego $registration $val_var $path_var $eab $domain_var; then
-                cronjob
-            else
-                echo ""
-                echo "ATTENTION:"
-                echo "There was a problem with the certificate request. Please check your credentials and domain validation."
-                echo "You can also contact TRUSTZONE support at support@trustzone.com"
-                exit
-            fi
-            if [[ $renewal = yes ]]; then
-                echo "Updating renewal list at: /etc/tz-bot/scripts/renewal_list"
-                echo "sudo lego $registration $val_var $path_var --eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
-                if [[ $server != "other" ]]; then
-                    echo "sudo systemctl restart $server" >> /etc/tz-bot/scripts/renewal_list
-                fi
-                if grep -q nginx "/etc/tz-bot/scripts/renewal_list"; then
-                    sudo sed -i.bak "/sudo systemctl restart nginx/d" /etc/tz-bot/scripts/renewal_list
-                    echo "sudo systemctl restart nginx" >> /etc/tz-bot/scripts/renewal_list
-                fi
-                if grep -q apache2 "/etc/tz-bot/scripts/renewal_list"; then
-                    sudo sed -i.bak "/sudo systemctl restart apache2/d" /etc/tz-bot/scripts/renewal_list
-                    echo "sudo systemctl restart apache2" >> /etc/tz-bot/scripts/renewal_list
-                fi
-            fi
-            if [[ $server != "other" ]]; then
-                echo "Attempting to restart web server: $server"
-                if sudo systemctl restart $server; then
-                    echo "$server restarted successfully."
-                else
-                    echo "Failed to restart $server. Please check the server status manually."
-                fi
-            fi
-            echo ""
-            echo "Your certificate is here: $path"
-            start_prompt
-            ;;
-        *)
-            echo "internal error in "new_cert" function"
-            exit 1
-            ;;
-    esac
+        fi
+    fi
+    echo ""
+    echo "Your certificate is here: $path"
+    start_prompt
 }
 
 # Start
-echo "Welcome to TZ-Bot V1.0"
+echo "Welcome to TZ-Bot V1.1"
 upkeep
 start_prompt

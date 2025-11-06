@@ -515,42 +515,6 @@ function new_cert() {
     fi
 
     case $validation in
-        manual)
-            echo "LEGO command: sudo lego $registration $val_var $path_var $eab $domain_var"
-            if sudo lego $registration $val_var $path_var $eab $domain_var; then
-                cronjob
-            else
-                echo ""
-                echo "There was a problem with the certificate request. Please check your credentials and domain validation."
-                echo "You can also contact TRUSTZONE support at support@trustzone.com"
-                exit
-            fi
-            if [[ $renewal = yes ]]; then
-                echo "Checking for existing renewal"
-                if sudo grep -q -- "--domains $domain" "/etc/tz-bot/scripts/renewal_list"; then
-                    echo "Renewal for $domain already exists in renewal list. Skipping addition."
-                    else
-                    echo "Updating renewal list at: /etc/tz-bot/scripts/renewal_list"
-                    echo "sudo lego $registration $val_var $path_var --eab $domain_renew_var" >> /etc/tz-bot/scripts/renewal_list
-                fi
-                if [[ $automatic_restart = "yes" ]]; then
-                    echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list
-                    if grep -q "$reload_command" "/etc/tz-bot/scripts/renewal_list"; then
-                        sudo sed -i.bak "\#$reload_command#d" /etc/tz-bot/scripts/renewal_list
-                        echo "$reload_command" >> /etc/tz-bot/scripts/renewal_list
-                    fi
-                    echo "Attempting to reload server using command: $reload_command"
-                    if sudo $reload_command; then
-                        echo "Web server reloaded successfully."
-                    else
-                        echo "Failed to reload. You may need to reload manually to pick up new certificates."
-                    fi
-                fi
-            fi
-            echo ""
-            echo "Your certificate is here: $path"
-            start_prompt
-            ;;
         DNS)
             echo "LEGO command: sudo -E lego $registration $val_var $path_var $eab $domain_var"
             if sudo -E lego $registration $val_var $path_var $eab $domain_var; then

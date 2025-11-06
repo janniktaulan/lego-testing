@@ -553,6 +553,7 @@ function new_cert() {
                     else
                         echo "Failed to reload. You may need to reload manually to pick up new certificates."
                     fi
+                fi
             fi
             echo ""
             echo "Your certificate is here: $path"

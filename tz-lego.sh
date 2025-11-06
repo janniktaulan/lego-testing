@@ -20,6 +20,8 @@ function cronjob() {
                 read -p "Please enter your desired reload command: " reload_command
                 automatic_restart="yes"
             else
+                automatic_restart="no"
+                echo ""
                 echo "Proceeding without automatic reload."
                 echo "Warning: Your server might not pick up new certificates until it is manually reloaded."
             fi

@@ -20,6 +20,8 @@ function cronjob() {
                 read -p "Please enter your desired reload command: " reload_command
                 automatic_restart="yes"
             else
+                automatic_restart="no"
+                echo ""
                 echo "Proceeding without automatic reload."
                 echo "Warning: Your server might not pick up new certificates until it is manually reloaded."
             fi
@@ -428,7 +430,7 @@ function start_prompt() {
             exit 0
             ;;
         x)
-            if sudo curl -L https://github.com/janniktaulan/lego-testing/releases/download/beta/tz-lego.sh > /tmp/tz-bot; then
+            if sudo curl -L https://github.com/janniktaulan/lego-testing/releases/download/beta/tz-lego-secOV.sh > /tmp/tz-bot; then
                 if sudo mv /tmp/tz-bot /usr/local/bin/tz-bot; then
                     sudo chmod +x /usr/local/bin/tz-bot
                     echo "Downloaded the latest release. Run it as you would normally."

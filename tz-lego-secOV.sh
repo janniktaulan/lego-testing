@@ -63,6 +63,7 @@ function upkeep() {
             echo "TZ-Bot has been installed successfully. You can now run it using the command 'tz-bot' or 'sudo tz-bot'"
             exit
         else
+            echo ""
             echo "Installation failed."
             exit 1
         fi
@@ -79,10 +80,12 @@ function upkeep() {
             sudo mv /tmp/lego /usr/local/bin/lego
             sudo chmod +x /usr/local/bin/lego
                 if ! command -v lego >/dev/null 2>&1; then
+                echo ""
                 echo "Lego installation failed. Please install Lego manually."
                 exit 1
                 fi
         else
+            echo ""
             echo "Lego is required to use TZ-bot. If you need help installing lego, please contact TRUSTZONE support at support@trustzone.com"
             exit 1
         fi
@@ -99,10 +102,12 @@ function upkeep() {
             sudo apt-get update
             sudo apt-get install cron -y
                 if ! command -v crontab >/dev/null 2>&1; then
+                echo ""
                 echo "Crontab installation failed. Please install cron/crontab manually."
                 exit 1
                 fi
         else
+            echo ""
             echo "Entering manual renewal mode."
             cron="false"
         fi

@@ -512,7 +512,7 @@ function new_cert() {
     case $validation_choice in
         1)
             lego_var="lego"
-            echo "MODE: Pre-validated DNS"
+            echo "MODE: Pre-validated"
             echo
             val_var="--dns manual"
             read_credentials

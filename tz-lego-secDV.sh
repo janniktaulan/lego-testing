@@ -505,7 +505,7 @@ function new_cert() {
     echo "How do you want to validate?"
     echo "1: DNS validation"
     echo "2: HTTP Validation (Requires port 80 to be open)"
-    read -n 1 -p "Enter choice [1-3]: " validation_choice
+    read -n 1 -p "Enter choice [1-2]: " validation_choice
     echo
 
     case $validation_choice in

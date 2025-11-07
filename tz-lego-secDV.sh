@@ -172,7 +172,7 @@ function renewal_management() {
     echo
     case $renewal_choice in
         1)
-            if ! grep -q "sudo lego" "/etc/tz-bot/scripts/renewal_list"; then
+            if ! grep -q "lego" "/etc/tz-bot/scripts/renewal_list"; then
                 echo ""
                 echo "No renewals found."
             else
@@ -190,7 +190,7 @@ function renewal_management() {
             renewal_management
             ;;
         3)
-            if ! grep -q "sudo lego" "/etc/tz-bot/scripts/renewal_list"; then
+            if ! grep -q "lego" "/etc/tz-bot/scripts/renewal_list"; then
                 echo ""
                 echo "No renewals found."
                 renewal_management

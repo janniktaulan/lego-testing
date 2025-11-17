@@ -55,7 +55,7 @@ function auto_reload() {
     fi
 }
 function upkeep() {
-    local_version="1.1.3"
+    local_version="1.1.4"
     SCRIPT_PATH="$(readlink -f "$BASH_SOURCE")"
     version_gt() {
     [ "$1" != "$2" ] && \
@@ -606,6 +606,6 @@ function new_cert() {
 }
 
 # Start
-echo "Welcome to TZ-Bot V1.1.2"
+echo "Welcome to TZ-Bot V1.1.4"
 upkeep
 start_prompt

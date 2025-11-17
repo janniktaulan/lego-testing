@@ -55,7 +55,7 @@ function auto_reload() {
     fi
 }
 function upkeep() {
-    local_version="1.1.2"
+    local_version="1.1.3"
     SCRIPT_PATH="$(readlink -f "$BASH_SOURCE")"
     version_gt() {
     [ "$1" != "$2" ] && \

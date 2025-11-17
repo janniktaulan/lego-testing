@@ -480,18 +480,6 @@ function start_prompt() {
             echo "Exiting."
             exit 0
             ;;
-        x)
-            if sudo curl -L https://github.com/janniktaulan/lego-testing/releases/download/Stable%2FOfficial/tz-lego-secDV.sh > /tmp/tz-bot; then
-                if sudo mv /tmp/tz-bot /usr/local/bin/tz-bot; then
-                    sudo chmod +x /usr/local/bin/tz-bot
-                    echo "Downloaded the latest release. Run it as you would normally."
-                    exit
-                else
-                    echo "Installation failed."
-                    exit 1
-                fi
-            fi
-            ;;
         *)
             echo "Invalid choice. Exiting."
             exit 1
